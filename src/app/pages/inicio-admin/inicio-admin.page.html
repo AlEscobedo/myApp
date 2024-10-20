@@ -1,0 +1,42 @@
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>¿Que quieres hacer?</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-list [inset]="true">
+      <ion-item [button]="true">
+        <ion-icon color="warning" slot="start" name="person" size="large"></ion-icon>
+        <ion-label>Usuarios</ion-label>        
+      </ion-item>
+      <ion-item [button]="true">
+        <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
+        <ion-label>Menu</ion-label>        
+      </ion-item>
+      <ion-item [button]="true">
+        <ion-icon color="success" slot="start" name="book" size="large"></ion-icon>
+        <ion-label>Dashboards</ion-label>        
+      </ion-item>
+      <ion-item [button]="true" (click)="IrHome()">
+        <ion-icon color="danger" slot="start" name="exit" size="large"></ion-icon>
+        <ion-label>Cerrar Sesión</ion-label>        
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title class="ion-text-center">¡Bienvenido Admin!</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+
+  </ion-content>
+</div>
