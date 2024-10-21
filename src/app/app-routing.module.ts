@@ -8,13 +8,19 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'inicio-admin',
+    redirectTo: 'home',
     pathMatch: 'full'
   },
   {
     path: 'inicio-admin',
     loadChildren: () => import('./pages/inicio-admin/inicio-admin.module').then( m => m.InicioAdminPageModule)
   },
+  {
+    path: 'usuarios-admin',
+    loadChildren: () => import('./pages/usuarios-admin/usuarios-admin.module').then( m => m.UsuariosAdminPageModule)
+  },
+
+
 ];
 
 @NgModule({

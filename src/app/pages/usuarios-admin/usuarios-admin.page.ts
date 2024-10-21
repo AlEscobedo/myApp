@@ -3,18 +3,19 @@ import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-inicio-admin',
-  templateUrl: './inicio-admin.page.html',
-  styleUrls: ['./inicio-admin.page.scss'],
+  selector: 'app-usuarios-admin',
+  templateUrl: './usuarios-admin.page.html',
+  styleUrls: ['./usuarios-admin.page.scss'],
 })
-export class InicioAdminPage implements OnInit {
+export class UsuariosAdminPage implements OnInit {
 
   constructor(private router: Router, private menu: MenuController) { }
 
   ngOnInit() {
   }
   ionViewWillEnter() {
-    this.menu.enable(true); 
+    this.menu.close();
+    this.menu.enable(true);
   }
   IrHome(){
     this.menu.close();
@@ -24,5 +25,8 @@ export class InicioAdminPage implements OnInit {
     this.menu.close();
     this.router.navigate(['/usuarios-admin']);
   }
-
+  IrInicioAdmin(){
+    this.menu.close();
+    this.router.navigate(['/inicio-admin']);
+  }
 }
