@@ -3,25 +3,24 @@ import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-inicio-admin',
-  templateUrl: './inicio-admin.page.html',
-  styleUrls: ['./inicio-admin.page.scss'],
+  selector: 'app-usuarios-tipo',
+  templateUrl: './usuarios-tipo.page.html',
+  styleUrls: ['./usuarios-tipo.page.scss'],
 })
-export class InicioAdminPage implements OnInit {
+export class UsuariosTipoPage implements OnInit {
 
   constructor(private router: Router, private menu: MenuController) { }
 
-  ngOnInit() {   
+  ngOnInit() {
   }
-
-  async IrHome() {
+  async IrInicioAdmin() {
     await this.menu.close();
-    this.router.navigate(['/home']);
+    this.menu.enable(false);
+    this.router.navigate(['/inicio-admin']);
   }
   async IrUsuariosAdmin() {
     await this.menu.close();
     this.menu.enable(false);
     this.router.navigate(['/usuarios-admin']);
   }
-
 }

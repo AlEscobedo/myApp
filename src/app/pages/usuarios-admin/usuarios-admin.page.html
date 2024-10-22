@@ -1,40 +1,15 @@
-<ion-menu contentId="main-content">
+<div class="ion-page">
   <ion-header>
-    <ion-toolbar>
-      <ion-title>¿Que quieres hacer?</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content class="ion-padding">
-    <ion-list [inset]="true">
-      <ion-item [button]="true">
-        <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
-        <ion-label>Menu</ion-label>
-      </ion-item>
-      <ion-item [button]="true">
-        <ion-icon color="success" slot="start" name="book" size="large"></ion-icon>
-        <ion-label>Dashboards</ion-label>
-      </ion-item>
-      <ion-item [button]="true">
-        <ion-icon color="white" slot="start" name="settings" size="large"></ion-icon>
-        <ion-label>Ajustes de la Cuenta</ion-label>
-      </ion-item>
-      <ion-item [button]="true" (click)="IrInicioAdmin()">
-        <ion-icon color="danger" slot="start" name="exit" size="large"></ion-icon>
-        <ion-label>Volver Atras</ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-content>
-</ion-menu>
 
-
-<div class="ion-page" id="main-content">
-  <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
+        <ion-item [button]="true" (click)="IrInicioAdmin()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-item>
       </ion-buttons>
       <ion-title class="ion-text-center">¡Bienvenido a Usuarios!</ion-title>
     </ion-toolbar>
+
   </ion-header>
   <ion-content class="ion-padding">
     <ion-card>
@@ -55,7 +30,7 @@
       </ion-card-header>
       <ion-card-content>
         <div class="centrar">
-          <ion-button color="warning" shape="round">
+          <ion-button (click)="IrUsuariosTipoEmpleado()" color="warning" shape="round">
             <p>Ver Empleados</p>
           </ion-button>
         </div>
@@ -66,6 +41,5 @@
         </div>
       </ion-card-content>
     </ion-card>
-
   </ion-content>
 </div>
