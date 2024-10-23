@@ -34,4 +34,9 @@ export class UsuariosAdminPage implements OnInit {
     this.menu.enable(false);
     this.router.navigate(['/usuarios-tipo-empleado']);
   }
+  async IrUsuariosTipoCliente() {
+    await this.menu.close();
+    this.menu.enable(false);
+    this.router.navigate(['/usuarios-tipo-cliente']);
+  }
 }

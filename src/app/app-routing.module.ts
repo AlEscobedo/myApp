@@ -22,7 +22,11 @@ const routes: Routes = [
   {
     path: 'usuarios-tipo-empleado',
     loadChildren: () => import('./pages/usuarios-tipo-empleado/usuarios-tipo.module').then( m => m.UsuariosTipoPageModule)
+  },  {
+    path: 'usuarios-tipo-cliente',
+    loadChildren: () => import('./pages/usuarios-tipo-cliente/usuarios-tipo-cliente.module').then( m => m.UsuariosTipoClientePageModule)
   },
+
 
   
 

@@ -3,18 +3,19 @@ import { IonModal, AlertController } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
 
 @Component({
-  selector: 'app-usuarios',
-  templateUrl: './usuarios.component.html',
-  styleUrls: ['./usuarios.component.scss'],
+  selector: 'app-usuarios-cliente',
+  templateUrl: './usuarios-cliente.component.html',
+  styleUrls: ['./usuarios-cliente.component.scss'],
 })
-export class UsuariosComponent implements OnInit {
+export class UsuariosClienteComponent implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
 
   message = 'Este modal se abre cuando el botón es presionado.';
+  rut: string = "";
   nombre: string = "";
-  sucursal: string = "";
   tipoUsuario: string = "";
   cantidadVentas: number = 0;
+  fechaRegistro: Date = new Date();
 
   constructor(private alertController: AlertController) {}
 
@@ -28,10 +29,11 @@ export class UsuariosComponent implements OnInit {
   // Guardar los cambios y cerrar el modal
   confirm() {
     this.modal.dismiss({
+      rut: this.rut,
       nombre: this.nombre,
-      sucursal: this.sucursal,
       tipoUsuario: this.tipoUsuario,
       cantidadVentas: this.cantidadVentas,
+      fechaRegistro: this.fechaRegistro,
     }, 'confirm');
   }
 
