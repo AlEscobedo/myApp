@@ -10,7 +10,7 @@
         <ion-icon color="warning" slot="start" name="person" size="large"></ion-icon>
         <ion-label>Usuarios</ion-label>
       </ion-item>
-      <ion-item>
+      <ion-item [button]="true" (click)="IrMenuAdmin()">
         <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
         <ion-label>Menu</ion-label>
       </ion-item>
@@ -85,7 +85,7 @@
 
       <ion-card-content>
         <div class="centrar">
-          <ion-button color="tertiary" shape="round">
+          <ion-button [routerLink]="['/menu-admin']" color="tertiary" shape="round">
             <p>Ir al Menu</p>
           </ion-button>
         </div>
