@@ -14,8 +14,6 @@ export class MenuAdminPage implements OnInit {
   ngOnInit() {
   }
   async IrInicioAdmin() {
-    await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/inicio-admin']);
   }
 }

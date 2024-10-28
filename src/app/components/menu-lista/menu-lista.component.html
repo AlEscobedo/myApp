@@ -4,15 +4,24 @@
       <ion-card-title>Menú <br> Categorias y Productos</ion-card-title>
       <ion-card-subtitle>
         Aqui puedes ver el menu, las categorias y productos dentro de las mismas,
-          tambien podras agregar, modificar y/o eliminar productos y categorias
+        tambien podras agregar, modificar y/o eliminar productos y categorias
       </ion-card-subtitle>
-    </ion-card-header>    
+    </ion-card-header>
   </ion-card>
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Categoria 1 Ejemplo</ion-card-title>
-      <ion-card-subtitle>Ejemplo de la descripción de la categoria 1</ion-card-subtitle>
+      <ion-item>
+        <ion-col size="11" class="ion-text-center">
+          <ion-card-title>Categoria 1 Ejemplo</ion-card-title>
+          <ion-card-subtitle>Ejemplo de la descripción de la categoria 1</ion-card-subtitle>
+        </ion-col>
+        <ion-col size="auto">
+          <ion-button id="open-modal-2" fill="clear" size="small" color="primary">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-item>
     </ion-card-header>
     <ion-card-content>
       <ion-list>
@@ -178,16 +187,17 @@
   </ion-card>
 
 
-  <ion-modal trigger="open-modal-1" (willDismiss)="onWillDismiss($event)">
+  <!-- Modal para Ajuste Producto -->
+  <ion-modal #modalProducto trigger="open-modal-1" (willDismiss)="onWillDismiss($event, 'producto')">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button (click)="cancel()">Salir</ion-button>
+            <ion-button (click)="cancel('producto')">Salir</ion-button>
           </ion-buttons>
           <ion-title>Ajuste Producto</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="confirm()" [strong]="true">Guardar</ion-button>
+            <ion-button (click)="confirm('producto')" [strong]="true">Guardar</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -203,13 +213,42 @@
         <ion-item>
           <ion-input label="valorProducto" labelPlacement="stacked" type="number" placeholder="$12.000"
             [(ngModel)]="valorProducto"></ion-input>
-        </ion-item>        
+        </ion-item>
         <div class="ion-margin-top">
-          <ion-button expand="block" color="danger" (click)="delete()">
+          <ion-button expand="block" color="danger" (click)="delete('producto')">
             Eliminar Producto
           </ion-button>
         </div>
       </ion-content>
     </ng-template>
   </ion-modal>
+
+  <!-- Modal para Detalles Categoria -->
+  <ion-modal #modalCategoria trigger="open-modal-2" (willDismiss)="onWillDismiss($event, 'categoria')">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel('categoria')">Salir</ion-button>
+          </ion-buttons>
+          <ion-title>Detalles de la Categoría</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirm('categoria')" [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input label="Nombre Categoria" labelPlacement="stacked" type="text" placeholder="Nombre de la categoría"
+            [(ngModel)]="nombreCategoria"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Descripcion Categoria" labelPlacement="stacked" type="text"
+            placeholder="Descripción de la categoría" [(ngModel)]="descripcionCategoria"></ion-input>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
 </ion-content>

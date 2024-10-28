@@ -14,29 +14,19 @@ export class UsuariosAdminPage implements OnInit {
   ngOnInit() {
   }
   async IrHome() {
-    await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/home']);
   }
   async IrUsuariosAdmin() {
-    await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/usuarios-admin']);
 
   }
   async IrInicioAdmin() {
-    await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/inicio-admin']);
   }
   async IrUsuariosTipoEmpleado() {
-    await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/usuarios-tipo-empleado']);
   }
   async IrUsuariosTipoCliente() {
-    await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/usuarios-tipo-cliente']);
   }
 }
