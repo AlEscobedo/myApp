@@ -20,17 +20,14 @@ export class InicioAdminPage implements OnInit {
   }
   async IrUsuariosAdmin() {
     await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/usuarios-admin']);
   }
   async IrMenuAdmin() {
     await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/menu-admin']);
   }
   async IrAjusteAdmin() {
     await this.menu.close();
-    this.menu.enable(false);
     this.router.navigate(['/ajuste-admin']);
   }
 }
