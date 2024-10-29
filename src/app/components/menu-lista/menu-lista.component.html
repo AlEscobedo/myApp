@@ -9,6 +9,82 @@
     </ion-card-header>
   </ion-card>
 
+  <!-- Tarjeta con opciones para agregar producto y categoría -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Gestión de Inventario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button id="open-create-product-modal" expand="block" color="primary">
+        Agregar Nuevo Producto
+      </ion-button>
+      <ion-button id="open-create-category-modal" expand="block" color="secondary">
+        Agregar Nueva Categoría
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Modal para Crear Nuevo Producto -->
+  <ion-modal #modalCrearProducto trigger="open-create-product-modal"
+    (willDismiss)="onWillDismiss($event, 'crearProducto')">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel('crearProducto')">Salir</ion-button>
+          </ion-buttons>
+          <ion-title>Crear Nuevo Producto</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirm('crearProducto')" [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input label="Nombre del Producto" labelPlacement="stacked" type="text" placeholder="Nombre del producto"
+            [(ngModel)]="nombreNuevoProducto"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Descripción del Producto" labelPlacement="stacked" type="text"
+            placeholder="Descripción del producto" [(ngModel)]="descripcionNuevoProducto"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Valor del Producto" labelPlacement="stacked" type="number" placeholder="$12.000"
+            [(ngModel)]="valorNuevoProducto"></ion-input>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal para Crear Nueva Categoría -->
+  <ion-modal #modalCrearCategoria trigger="open-create-category-modal"
+    (willDismiss)="onWillDismiss($event, 'crearCategoria')">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel('crearCategoria')">Salir</ion-button>
+          </ion-buttons>
+          <ion-title>Crear Nueva Categoría</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirm('crearCategoria')" [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input label="Nombre de la Categoría" labelPlacement="stacked" type="text"
+            placeholder="Nombre de la categoría" [(ngModel)]="nombreNuevaCategoria"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Descripción de la Categoría" labelPlacement="stacked" type="text"
+            placeholder="Descripción de la categoría" [(ngModel)]="descripcionNuevaCategoria"></ion-input>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+
   <ion-card>
     <ion-card-header>
       <ion-item>
@@ -246,6 +322,11 @@
           <ion-input label="Descripcion Categoria" labelPlacement="stacked" type="text"
             placeholder="Descripción de la categoría" [(ngModel)]="descripcionCategoria"></ion-input>
         </ion-item>
+        <div class="ion-margin-top">
+          <ion-button expand="block" color="danger" (click)="delete('categoria')">
+            Eliminar Categoria
+          </ion-button>
+        </div>
       </ion-content>
     </ng-template>
   </ion-modal>
