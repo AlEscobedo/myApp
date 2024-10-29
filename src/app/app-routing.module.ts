@@ -30,7 +30,11 @@ const routes: Routes = [
   {
     path: 'menu-admin',
     loadChildren: () => import('./pages/menu-admin/menu-admin.module').then( m => m.MenuAdminPageModule)
+  },  {
+    path: 'ajuste-admin',
+    loadChildren: () => import('./pages/ajuste-admin/ajuste-admin.module').then( m => m.AjusteAdminPageModule)
   },
+
 
 
   

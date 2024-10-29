@@ -13,14 +13,10 @@ export class UsuariosTipoPage implements OnInit {
 
   ngOnInit() {
   }
-  async IrInicioAdmin() {
-    await this.menu.close();
-    this.menu.enable(false);
+  async IrInicioAdmin() {    
     this.router.navigate(['/inicio-admin']);
   }
-  async IrUsuariosAdmin() {
-    await this.menu.close();
-    this.menu.enable(false);
+  async IrUsuariosAdmin() {    
     this.router.navigate(['/usuarios-admin']);
   }
 }

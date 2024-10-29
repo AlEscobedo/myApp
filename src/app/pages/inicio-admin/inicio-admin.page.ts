@@ -28,4 +28,9 @@ export class InicioAdminPage implements OnInit {
     this.menu.enable(false);
     this.router.navigate(['/menu-admin']);
   }
+  async IrAjusteAdmin() {
+    await this.menu.close();
+    this.menu.enable(false);
+    this.router.navigate(['/ajuste-admin']);
+  }
 }

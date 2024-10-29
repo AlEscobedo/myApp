@@ -1,0 +1,98 @@
+<ion-content class="container">
+  <div class="ion-page">
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-item [button]="true" (click)="IrInicioAdmin()">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </ion-item>
+        </ion-buttons>
+        <ion-title class="ion-text-center">¡Bienvenido a Ajuste de Cuenta!</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <h3 class="ion-text-center">
+              Ajustes de Cuenta
+            </h3>
+          </ion-card-title>
+          <ion-card-subtitle>
+            <p class="ion-text-center">
+              Administrador, aquí puedes cambiar la foto del inicio de la aplicación, tus datos de contacto y
+              contraseña.
+            </p>
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Código para ajuste de la cuenta -->
+          <ion-card>            
+            <ion-card-header>
+              <div class="image-container">
+                <img [src]="imageUrl || 'https://ionicframework.com/docs/img/demos/card-media.png'"
+                  alt="Imagen de perfil" />
+                <ion-button class="edit-button" (click)="openImageModal()">
+                  <ion-icon name="create-outline"></ion-icon>
+                </ion-button>
+              </div>
+              <ion-card-title>
+                <ion-item>
+                  <ion-label>
+                    <p>Usuario:</p>
+                    <h2>Admin</h2>
+                  </ion-label>
+                  <ion-button (click)="openUserModal()">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-card-title>
+              <ion-card-subtitle>
+                <ion-item>
+                  <ion-label>
+                    <p>Nombre Completo:</p>
+                    <h2>Jon Doe</h2>
+                  </ion-label>
+                  <ion-button (click)="openNameModal()">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+
+                <ion-item>
+                  <ion-label>
+                    <p>Correo:</p>
+                    <h2>jon.doe&#64;admin.cl</h2>
+                  </ion-label>
+                  <ion-button (click)="openEmailModal()">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+
+                <ion-item>
+                  <ion-label>
+                    <p>Contraseña:</p>
+                    <h2>********</h2>
+                  </ion-label>
+                  <ion-button (click)="openPasswordModal()">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+
+                <!-- Botón para editar la imagen -->
+                <ion-item>
+                  <ion-label>
+                    <p>Imagen de Perfil:</p>
+                  </ion-label>
+                  <ion-button (click)="openImageModal()">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+
+              </ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </div>
+</ion-content>

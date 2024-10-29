@@ -1,0 +1,16 @@
+.image-container {
+    position: relative; /* Habilita el posicionamiento absoluto para los elementos hijos */
+  }
+  
+  .image-container img {
+    width: 100%; /* Asegúrate de que la imagen ocupe todo el contenedor */
+    height: auto; /* Mantiene la proporción de la imagen */
+  }
+  
+  .edit-button {
+    position: absolute; /* Posiciona el botón de manera absoluta dentro del contenedor */
+    top: 10px; /* Ajusta el valor según sea necesario */
+    right: 10px; /* Ajusta el valor según sea necesario */
+    z-index: 10; /* Asegúrate de que el botón esté encima de la imagen */
+  }
+  
