@@ -7,53 +7,13 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list>
-        <ion-item>
+        <ion-item *ngFor="let usuario of usuarios">
           <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains"
-              src="https://media.licdn.com/dms/image/v2/D5603AQHGELgkbotZhg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1683038794336?e=1735171200&v=beta&t=l_F62YfEhaBAHey85A2Jm6KysKdvAzx8XSUAzVOyZuw" />
+            <img [alt]="usuario.nombre" [src]="usuario.imagen"/>
           </ion-thumbnail>
-          <ion-label>Alejandro Escobedo</ion-label>
+          <ion-label>{{ usuario.nombre }}</ion-label>
           <ion-buttons slot="end">
-            <ion-button id="open-modal-1" color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains"
-              src="https://media.licdn.com/dms/image/v2/D4E35AQFCPKNFLUfswg/profile-framedphoto-shrink_100_100/profile-framedphoto-shrink_100_100/0/1721843334323?e=1730235600&v=beta&t=DYKF0uwKrqcXaOqgXlyIVsxD6L56mZpph9Juog-11sI" />
-          </ion-thumbnail>
-          <ion-label>Nicolas Moreno</ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains"
-              src="https://thumbs.dreamstime.com/b/hombre-de-negocios-icon-persona-inc%C3%B3gnita-desconocida-silueta-del-en-el-fondo-blanco-112802675.jpg" />
-          </ion-thumbnail>
-          <ion-label>Benjamin Tagle</ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-
-        <ion-item lines="none">
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains"
-              src="https://media.licdn.com/dms/image/v2/D4E03AQEbUPPNidVxEQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1688339937942?e=1735171200&v=beta&t=eVSHXTJipM-iOTR_iH8Gbvu-xifT5o7ybGjJpfgICbg" />
-          </ion-thumbnail>
-          <ion-label>Alvaro Mellado</ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
+            <ion-button (click)="abrirModal(usuario)" color="primary">
               <ion-icon slot="icon-only" name="create-outline"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -62,7 +22,7 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-modal trigger="open-modal-1" (willDismiss)="onWillDismiss($event)">
+  <ion-modal (willDismiss)="onWillDismiss($event)">
     <ng-template>
       <ion-header>
         <ion-toolbar>
@@ -77,16 +37,20 @@
       </ion-header>
       <ion-content class="ion-padding">
         <ion-item>
-          <ion-input label="Nombre Completo" labelPlacement="stacked" type="text" placeholder="Alejandro Escobedo"
-            [(ngModel)]="nombre"></ion-input>
+          <ion-input label="rut" labelPlacement="stacked" type="text" placeholder="12.345.678-9"
+            [(ngModel)]="rut" readonly></ion-input>
         </ion-item>
         <ion-item>
-          <ion-input label="Sucursal" labelPlacement="stacked" type="text" placeholder="Mall Plaza Norte"
-            [(ngModel)]="sucursal"></ion-input>
+          <ion-input label="Nombre Completo" labelPlacement="stacked" type="text" placeholder="Franco Escobedo"
+            [(ngModel)]="nombre"></ion-input>
         </ion-item>
         <ion-item>
           <ion-input label="Cantidad de Ventas Realizadas" labelPlacement="stacked" type="number" placeholder="43"
             [(ngModel)]="cantidadVentas"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Empleado Activo Desde" labelPlacement="stacked" type="date"
+            [(ngModel)]="fechaRegistroString" readonly></ion-input>
         </ion-item>
         <div class="ion-margin-top">
           <ion-button expand="block" color="danger" (click)="delete()">
@@ -96,5 +60,4 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-
 </ion-content>

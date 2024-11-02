@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -13,7 +14,8 @@ import { EditModalAjusteAdminModule } from './components/edit-modal-ajuste-admin
   imports: [BrowserModule, 
             IonicModule.forRoot(), 
             AppRoutingModule,
-            EditModalAjusteAdminModule],            
+            EditModalAjusteAdminModule,
+            IonicStorageModule.forRoot()],            
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

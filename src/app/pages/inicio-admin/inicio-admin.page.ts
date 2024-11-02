@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth.service'
 
 @Component({
   selector: 'app-inicio-admin',
@@ -9,13 +10,14 @@ import { MenuController } from '@ionic/angular';
 })
 export class InicioAdminPage implements OnInit {
 
-  constructor(private router: Router, private menu: MenuController) { }
+  constructor(private router: Router, private menu: MenuController, private authService: AuthService) { }
 
   ngOnInit() {   
   }
 
   async IrHome() {
     await this.menu.close();
+    await this.authService.clearCredentials();
     this.router.navigate(['/home']);
   }
   async IrUsuariosAdmin() {
