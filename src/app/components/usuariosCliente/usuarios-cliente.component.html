@@ -2,14 +2,27 @@
   <ion-card>
     <ion-card-header>
       <ion-card-title>Usuarios Clientes</ion-card-title>
-      <ion-card-subtitle>Aqui puedes ver a todos tus clientes, editar su información respectiva y/o
+      <ion-card-subtitle>Aqui puedes ver a todos tus clienes, editar su información respectiva y/o
         eliminarlos</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
+
+      <ion-card (click)="abrirModalNuevoCliente()">
+        <ion-card-header>
+          <ion-card-title>Agregar a Nuevo Cliente</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-icon name="add-circle-outline" slot="start" color="success" size="large"></ion-icon>
+            <ion-label>Añadir un nuevo cliente</ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
       <ion-list>
         <ion-item *ngFor="let usuario of usuarios">
           <ion-thumbnail slot="start">
-            <img [alt]="usuario.nombre" [src]="usuario.imagen"/>
+            <img [alt]="usuario.nombre" [src]="usuario.imagen" />
           </ion-thumbnail>
           <ion-label>{{ usuario.nombre }}</ion-label>
           <ion-buttons slot="end">
@@ -36,28 +49,44 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
+
         <ion-item>
-          <ion-input label="rut" labelPlacement="stacked" type="text" placeholder="12.345.678-9"
-            [(ngModel)]="rut" readonly></ion-input>
+          <input type="file" (change)="onFileSelected($event)" accept="image/*" />
         </ion-item>
+
+        <!-- Vista previa de la imagen seleccionada -->
+        <ion-item *ngIf="imagenPreview">
+          <ion-thumbnail slot="start">
+            <img [src]="imagenPreview" alt="Vista previa de la imagen" />
+          </ion-thumbnail>
+        </ion-item>
+
         <ion-item>
-          <ion-input label="Nombre Completo" labelPlacement="stacked" type="text" placeholder="Franco Escobedo"
+          <ion-input label="RUT" labelPlacement="stacked" type="text" placeholder="12.345.678-9" [(ngModel)]="rut"
+            [readonly]="usuarioActual" [ngClass]="{'input-error': !validarRut(rut) && rut}">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input label="Nombre Completo" labelPlacement="stacked" type="text" placeholder="Jon Doe"
             [(ngModel)]="nombre"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-input label="Cantidad de Compras Realizadas" labelPlacement="stacked" type="number" placeholder="43"
-            [(ngModel)]="cantidadVentas"></ion-input>
+          <ion-input label="Cantidad de Compras Realizadas" labelPlacement="stacked" type="number"
+            [(ngModel)]="cantidadCompras" [value]="0" readonly></ion-input>
         </ion-item>
         <ion-item>
           <ion-input label="Cliente Activo Desde" labelPlacement="stacked" type="date"
-            [(ngModel)]="fechaRegistroString" readonly></ion-input>
+            [(ngModel)]="fechaRegistroString" [value]="fechaRegistroString" readonly></ion-input>
         </ion-item>
         <div class="ion-margin-top">
-          <ion-button expand="block" color="danger" (click)="delete()">
+          <ion-button expand="block" color="danger" (click)="delete()" *ngIf="usuarioActual">
             Eliminar Usuario
           </ion-button>
         </div>
       </ion-content>
     </ng-template>
   </ion-modal>
+
+
 </ion-content>
