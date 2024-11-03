@@ -25,7 +25,7 @@ export class UsuariosClienteComponent implements OnInit {
     {
       id: 1,
       rut: '12.345.678-9',
-      nombre: 'Alejandro Escobedo',
+      nombre: 'Franco Escobedo',
       tipoUsuario: 'Empleado',
       cantidadCompras: 90,
       fechaRegistro: new Date('2022-01-01'),
@@ -34,7 +34,7 @@ export class UsuariosClienteComponent implements OnInit {
     {
       id: 2,
       rut: '23.456.789-0',
-      nombre: 'Nicolas Moreno',
+      nombre: 'Rodrigo Alegria',
       tipoUsuario: 'Empleado',
       cantidadCompras: 50,
       fechaRegistro: new Date('2022-02-05'),
@@ -43,7 +43,7 @@ export class UsuariosClienteComponent implements OnInit {
     {
       id: 3,
       rut: '34.567.890-1',
-      nombre: 'Benjamin Tagle',
+      nombre: 'Tagle Cristobal',
       tipoUsuario: 'Empleado',
       cantidadCompras: 20,
       fechaRegistro: new Date('2022-03-25'),
