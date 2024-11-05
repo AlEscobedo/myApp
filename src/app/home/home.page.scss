@@ -1,8 +1,5 @@
-ion-content {
-  --background: #f0f0f0;
-}
 
-.container {
+.container {  
   text-align: center;
   position: absolute;
   left: 0;
@@ -23,6 +20,14 @@ h1 {
 
 ion-card {
   border-radius: 50px;
-  width: 80%;  
+  width: 80%;
   height: auto;
+}
+
+ion-card-content {
+  text-align: center;
+}
+
+ion-input {
+  text-align: center;
 }

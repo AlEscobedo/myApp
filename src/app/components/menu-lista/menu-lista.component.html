@@ -1,4 +1,4 @@
-<ion-content class="container">
+<ion-content class="container colorFondo">
   <ion-card>
     <ion-card-header>
       <ion-card-title>Menú <br> Categorias y Productos</ion-card-title>
@@ -15,10 +15,10 @@
       <ion-card-title>Gestión de Inventario</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-button id="open-create-product-modal" expand="block" color="primary">
+      <ion-button id="open-create-product-modal" expand="block" class="button-coffee">
         Agregar Nuevo Producto
       </ion-button>
-      <ion-button id="open-create-category-modal" expand="block" color="secondary">
+      <ion-button id="open-create-category-modal" expand="block" class="button-coffee">
         Agregar Nueva Categoría
       </ion-button>
     </ion-card-content>
@@ -33,7 +33,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('crearProducto')">Salir</ion-button>
           </ion-buttons>
-          <ion-title>Crear Nuevo Producto</ion-title>
+          <ion-title class="centered-title">Crear Nuevo Producto</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm('crearProducto')" [strong]="true">Guardar</ion-button>
           </ion-buttons>
@@ -65,7 +65,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('crearCategoria')">Salir</ion-button>
           </ion-buttons>
-          <ion-title>Crear Nueva Categoría</ion-title>
+          <ion-title class="centered-title">Crear Nueva Categoría</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm('crearCategoria')" [strong]="true">Guardar</ion-button>
           </ion-buttons>
@@ -110,118 +110,6 @@
           </ion-label>
           <ion-buttons slot="end">
             <ion-button id="open-modal-1" color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>Ejemplo Producto 2</h2>
-            <p>Ejemplo descripción Producto 2</p>
-            <p>$99.999</p>
-          </ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>Ejemplo Producto 3</h2>
-            <p>Ejemplo descripción Producto 3</p>
-            <p>$99.999</p>
-          </ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Categoria 2 Ejemplo</ion-card-title>
-      <ion-card-subtitle>Ejemplo de la descripción de la categoria 2</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>Ejemplo Producto 1</h2>
-            <p>Ejemplo descripción Producto 1</p>
-            <p>$99.999</p>
-          </ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>Ejemplo Producto 2</h2>
-            <p>Ejemplo descripción Producto 2</p>
-            <p>$99.999</p>
-          </ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>Ejemplo Producto 3</h2>
-            <p>Ejemplo descripción Producto 3</p>
-            <p>$99.999</p>
-          </ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Categoria 3 Ejemplo</ion-card-title>
-      <ion-card-subtitle>Ejemplo de la descripción de la categoria 3</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>Ejemplo Producto 1</h2>
-            <p>Ejemplo descripción Producto 1</p>
-            <p>$99.999</p>
-          </ion-label>
-          <ion-buttons slot="end">
-            <ion-button color="primary">
               <ion-icon slot="icon-only" name="create-outline"></ion-icon>
             </ion-button>
           </ion-buttons>

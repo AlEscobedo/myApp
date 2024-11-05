@@ -35,3 +35,17 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+.colorFondo {
+  --background: #594126;
+}
+.colorTarjeta{
+  --background: #faebd7;
+}
+.centered-title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  bottom: 50%;
+  transform: translateX(-50%);
+}

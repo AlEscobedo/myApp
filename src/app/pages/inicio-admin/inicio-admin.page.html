@@ -4,7 +4,7 @@
       <ion-title>¿Que quieres hacer?</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding">
+  <ion-content class="ion-padding colorFondo">
     <ion-list [inset]="true">
       <ion-item [button]="true" (click)="IrUsuariosAdmin()">
         <ion-icon color="warning" slot="start" name="person" size="large"></ion-icon>
@@ -37,17 +37,17 @@
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title class="ion-text-center">¡Bienvenido Admin!</ion-title>
+      <ion-title class="centered-title">¡Bienvenido Admin!</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding">
+  <ion-content class="ion-padding colorFondo">
     <ion-card>
       <ion-card-header>
         <ion-card-title>
           <div class="centrar">
             <ion-item>
+              <ion-icon color="warning" slot="start" name="person" size="large"></ion-icon>
               <h1>
-                <ion-icon color="warning" slot="start" name="person" size="large"></ion-icon>
                 Usuarios
               </h1>
             </ion-item>
@@ -71,12 +71,13 @@
       <ion-card-header>
         <ion-card-title>
           <div class="centrar">
-          <ion-item>
-            <h1>
-            <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
-            Menu</h1>
-          </ion-item>
-        </div>
+            <ion-item>
+              <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
+              <h1>
+                Menu
+              </h1>
+            </ion-item>
+          </div>
         </ion-card-title>
         <ion-card-subtitle class="ion-text-center">
           Aqui puedes ver el menu, las categorias y proctudos dentro de las mismas,
@@ -96,12 +97,13 @@
       <ion-card-header>
         <ion-card-title>
           <div class="centrar">
-          <ion-item>
-            <h1>
-            <ion-icon color="success" slot="start" name="book" size="large"></ion-icon>
-            Dashboards</h1>
-          </ion-item>
-        </div>
+            <ion-item>
+              <ion-icon color="success" slot="start" name="book" size="large"></ion-icon>
+              <h1>
+                Dashboards
+              </h1>
+            </ion-item>
+          </div>
         </ion-card-title>
         <ion-card-subtitle class="ion-text-center">
           Aqui podrás ver las cantidades de ventas diarias, semanales y mensuales de la tienda</ion-card-subtitle>

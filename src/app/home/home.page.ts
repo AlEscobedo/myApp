@@ -13,6 +13,7 @@ export class HomePage {
   password: string = '';
   passwordType: string = 'password';  // Tipo de input para la contraseña
   passwordIcon: string = 'eye-off';   // Icono por defecto
+  
 
   constructor(private router: Router, private alertController: AlertController, private authService: AuthService) { }
 
@@ -33,12 +34,7 @@ export class HomePage {
     }
   }
   togglePasswordVisibility() {
-    if (this.passwordType === 'password') {
-      this.passwordType = 'text';
-      this.passwordIcon = 'eye';
-    } else {
-      this.passwordType = 'password';
-      this.passwordIcon = 'eye-off';
-    }
+    this.passwordType = this.passwordType === 'password' ? 'text' : 'password';
+    this.passwordIcon = this.passwordIcon === 'eye-off' ? 'eye' : 'eye-off';
   }
 }

@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="colorFondo">
   <div class="container">
     <ion-card>
       <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
@@ -18,12 +18,13 @@
         </ion-item>
         <br>
         <ion-item>
-          <ion-input [(ngModel)]="password" [type]="passwordType" placeholder="Contraseña" class="ion-text-center"></ion-input>
+          <ion-input [(ngModel)]="password" [type]="passwordType" placeholder="Contraseña"
+            class="ion-text-center"></ion-input>
           <ion-icon [name]="passwordIcon" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
         </ion-item>
         <br>
         <ion-card-subtitle>
-          <ion-checkbox [indeterminate]="true">Recordarme</ion-checkbox>
+          <ion-checkbox>Recordarme</ion-checkbox>
         </ion-card-subtitle>
         <br>
         <ion-button color="dark" (click)="login()">
