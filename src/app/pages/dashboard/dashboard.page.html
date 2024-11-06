@@ -1,0 +1,57 @@
+<div class="ion-page">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-item [button]="true" (click)="IrInicioAdmin()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-item>
+      </ion-buttons>
+      <ion-title class="centered-title">¡Bienvenido al Dashboard!</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+    <!-- Selector de tipo de gráfico -->
+    <ion-item>
+      <ion-label>Tipo de Gráfico</ion-label>
+      <ion-select [(ngModel)]="chartType" (ionChange)="onChartTypeChange($event)">
+        <ion-select-option value="productoMasVendido">Producto Más Vendido por Categoría</ion-select-option>
+        <ion-select-option value="productoMasVendidoGeneral">Producto Más Vendido en General</ion-select-option>
+        <ion-select-option value="totalPorCategoria">Total Vendidos por Categoría</ion-select-option>
+        <ion-select-option value="totalVendidos">Total de Productos Vendidos</ion-select-option>
+      </ion-select>
+    </ion-item>
+    
+    <!-- Gráfico dinámico -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Gráfico de Ventas</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <canvas #barChart></canvas>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Tarjetas de métricas -->
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" size-md="4" *ngFor="let categoria of ventasProvisionales">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{ categoria.categoria }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item *ngFor="let producto of categoria.productos">
+                  <ion-label>
+                    {{ producto.nombre }}: {{ producto.vendidos }} vendidos
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-content>
+</div>

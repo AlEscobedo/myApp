@@ -34,6 +34,10 @@ const routes: Routes = [
     path: 'ajuste-admin',
     loadChildren: () => import('./pages/ajuste-admin/ajuste-admin.module').then( m => m.AjusteAdminPageModule)
   },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+  },
 
 
 

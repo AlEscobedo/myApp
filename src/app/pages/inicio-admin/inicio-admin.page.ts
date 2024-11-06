@@ -32,4 +32,8 @@ export class InicioAdminPage implements OnInit {
     await this.menu.close();
     this.router.navigate(['/ajuste-admin']);
   }
+  async IrDashboard() {
+    await this.menu.close();
+    this.router.navigate(['/dashboard']);
+  }
 }
