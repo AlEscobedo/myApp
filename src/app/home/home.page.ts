@@ -23,6 +23,10 @@ export class HomePage {
       await this.authService.setCredentials(this.username, this.password);
       // Navegar a la página de inicio del administrador
       this.router.navigate(['/inicio-admin']);
+      
+      // Limpiar los campos de entrada
+      this.username = '';
+      this.password = '';
     } else {
       // Muestra una alerta de error
       const alert = await this.alertController.create({
@@ -31,8 +35,12 @@ export class HomePage {
         buttons: ['OK'],
       });
       await alert.present();
+  
+      // Limpiar los campos de entrada en caso de error (opcional)
+      this.password = '';
     }
   }
+  
   togglePasswordVisibility() {
     this.passwordType = this.passwordType === 'password' ? 'text' : 'password';
     this.passwordIcon = this.passwordIcon === 'eye-off' ? 'eye' : 'eye-off';
