@@ -10,10 +10,9 @@
     </ion-toolbar>
   </ion-header>
   
-  <ion-content>
+  <ion-content class="colorFondo">
     <!-- Selector de tipo de gráfico -->
-    <ion-item>
-      <ion-label>Tipo de Gráfico</ion-label>
+    <ion-item>      
       <ion-select [(ngModel)]="chartType" (ionChange)="onChartTypeChange($event)">
         <ion-select-option value="productoMasVendido">Producto Más Vendido por Categoría</ion-select-option>
         <ion-select-option value="productoMasVendidoGeneral">Producto Más Vendido en General</ion-select-option>
@@ -23,7 +22,7 @@
     </ion-item>
     
     <!-- Gráfico dinámico -->
-    <ion-card>
+    <ion-card class="colorTarjeta">
       <ion-card-header>
         <ion-card-title>Gráfico de Ventas</ion-card-title>
       </ion-card-header>
@@ -36,7 +35,7 @@
     <ion-grid>
       <ion-row>
         <ion-col size="6" size-md="4" *ngFor="let categoria of ventasProvisionales">
-          <ion-card>
+          <ion-card class="colorTarjeta">
             <ion-card-header>
               <ion-card-title>{{ categoria.categoria }}</ion-card-title>
             </ion-card-header>
