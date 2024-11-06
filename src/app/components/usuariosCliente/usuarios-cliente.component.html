@@ -43,7 +43,9 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel()">Salir</ion-button>
           </ion-buttons>
-          <ion-title>Ajuste Usuario</ion-title>
+          <ion-title class="centered-title">
+            {{ esEdicion ? 'Ajuste Usuario' : 'Crear Usuario' }}
+          </ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm()" [strong]="true">Guardar</ion-button>
           </ion-buttons>

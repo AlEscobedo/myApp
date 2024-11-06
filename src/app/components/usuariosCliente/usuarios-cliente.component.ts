@@ -19,35 +19,37 @@ export class UsuariosClienteComponent implements OnInit {
   imagenUrl: string = "";
   imagenPreview: string | ArrayBuffer | null = ""; // Para la vista previa
   usuarioActual: any;  // Para almacenar el usuario que se está editando
+  usuarioOriginal: any;
+  esEdicion: boolean = false;
 
   // Lista de usuarios
   usuarios = [
     {
       id: 1,
-      rut: '12.345.678-9',
+      rut: '19.709.735-3',
       nombre: 'Franco Escobedo',
       tipoUsuario: 'Empleado',
       cantidadCompras: 90,
       fechaRegistro: new Date('2022-01-01'),
-      imagen: 'https://media.licdn.com/dms/image/v2/D5603AQHGELgkbotZhg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1683038794336?e=1735171200&v=beta&t=l_F62YfEhaBAHey85A2Jm6KysKdvAzx8XSUAzVOyZuw'
+      imagen: 'assets/imagenes/imgPredeterminada.png'
     },
     {
       id: 2,
-      rut: '23.456.789-0',
+      rut: '20.063.605-8',
       nombre: 'Rodrigo Alegria',
       tipoUsuario: 'Empleado',
       cantidadCompras: 50,
       fechaRegistro: new Date('2022-02-05'),
-      imagen: 'https://media.licdn.com/dms/image/v2/D4E35AQFCPKNFLUfswg/profile-framedphoto-shrink_100_100/profile-framedphoto-shrink_100_100/0/1721843334323?e=1731193200&v=beta&t=-ceQsn549Pr6uiVT9efiOttFrIEud1nThgEBGl4Z_-I'
+      imagen: 'assets/imagenes/imgPredeterminada.png'
     },
     {
       id: 3,
-      rut: '34.567.890-1',
+      rut: '20.658.154-9',
       nombre: 'Tagle Cristobal',
       tipoUsuario: 'Empleado',
       cantidadCompras: 20,
       fechaRegistro: new Date('2022-03-25'),
-      imagen: 'https://thumbs.dreamstime.com/b/hombre-de-negocios-icon-persona-inc%C3%B3gnita-desconocida-silueta-del-en-el-fondo-blanco-112802675.jpg'
+      imagen: 'assets/imagenes/imgPredeterminada.png'
     }
   ];
 
@@ -58,6 +60,9 @@ export class UsuariosClienteComponent implements OnInit {
   // Función para abrir el modal y cargar los datos del usuario
   abrirModal(usuario: any) {
     this.usuarioActual = usuario;  // Define el usuario actual para edición
+    this.usuarioOriginal = { ...usuario };
+    this.esEdicion = true;
+
     this.rut = usuario.rut;
     this.nombre = usuario.nombre;
     this.tipoUsuario = usuario.tipoUsuario;
@@ -88,36 +93,36 @@ export class UsuariosClienteComponent implements OnInit {
       await alert.present();
       return;
     }
-  
+
     const imagenFinal = typeof this.imagenPreview === 'string' ? this.imagenPreview : this.imagenUrl;
-  
+
     if (this.usuarioActual) {
-      // Editar usuario existente
-      this.usuarioActual.rut = this.rut;
-      this.usuarioActual.nombre = this.nombre;
-      this.usuarioActual.tipoUsuario = this.tipoUsuario;
-      this.usuarioActual.cantidadCompras = this.cantidadCompras;
-      this.usuarioActual.fechaRegistro = new Date(this.fechaRegistroString);
-      this.usuarioActual.imagen = imagenFinal;
-    } else {
-      // Crear nuevo usuario solo en confirm
-      this.usuarios.push({
-        id: this.usuarios.length + 1,
-        rut: this.rut,
-        nombre: this.nombre,
-        tipoUsuario: 'Empleado',
-        cantidadCompras: 0,
-        fechaRegistro: new Date(),
-        imagen: imagenFinal || 'URL_DE_LA_IMAGEN_POR_DEFECTO'
-      });
+      // Editar usuario existente: solo actualiza campos que hayan cambiado
+      if (this.rut !== this.usuarioOriginal.rut) {
+        this.usuarioActual.rut = this.rut;
+      }
+      if (this.nombre !== this.usuarioOriginal.nombre) {
+        this.usuarioActual.nombre = this.nombre;
+      }
+      if (this.tipoUsuario !== this.usuarioOriginal.tipoUsuario) {
+        this.usuarioActual.tipoUsuario = this.tipoUsuario;
+      }
+      if (this.cantidadCompras !== this.usuarioOriginal.cantidadVentas) {
+        this.usuarioActual.cantidadVentas = this.cantidadCompras;
+      }
+      if (this.fechaRegistroString !== this.usuarioOriginal.fechaRegistro.toISOString().split('T')[0]) {
+        this.usuarioActual.fechaRegistro = new Date(this.fechaRegistroString);
+      }
+      if (imagenFinal !== this.usuarioOriginal.imagen) {
+        this.usuarioActual.imagen = imagenFinal;
+      }
     }
-  
-    // Cerrar el modal y notificar la acción
+
     this.modal.dismiss({
       nombre: this.nombre,
       rut: this.rut,
       tipoUsuario: this.tipoUsuario,
-      cantidadCompras: this.cantidadCompras,
+      cantidadVentas: this.cantidadCompras,
       fechaRegistro: new Date(this.fechaRegistroString),
       imagen: imagenFinal
     }, 'confirm');
@@ -155,6 +160,7 @@ export class UsuariosClienteComponent implements OnInit {
     this.cantidadCompras = 0;
     this.fechaRegistroString = new Date().toISOString().split('T')[0];  // Fecha actual
     this.imagenPreview = '';
+    this.esEdicion = false;
     this.modal.present();  // Abre el modal
   }
 

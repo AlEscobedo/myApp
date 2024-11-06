@@ -2,7 +2,7 @@
   <ion-card class="colorTarjeta">
     <ion-card-header>
       <ion-card-title>Usuarios Empleados</ion-card-title>
-      <ion-card-subtitle>Aqui puedes ver a todos tus empleados, editar su información respectiva y/o
+      <ion-card-subtitle>Aqui puedes ver a todos tus empleados, agregar uno nuevo, editar su información respectiva y/o
         eliminarlos</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
@@ -42,7 +42,9 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel()">Salir</ion-button>
           </ion-buttons>
-          <ion-title>Ajuste Usuario</ion-title>
+          <ion-title class="centered-title">
+            {{ esEdicion ? 'Ajuste Usuario' : 'Crear Usuario' }}
+          </ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm()" [strong]="true">Guardar</ion-button>
           </ion-buttons>
