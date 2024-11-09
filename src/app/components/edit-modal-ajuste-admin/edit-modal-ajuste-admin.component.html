@@ -10,11 +10,19 @@
 <ion-content>
   <ion-item *ngIf="isImage">
     <ion-label>Selecciona una imagen</ion-label>
-    <input type="file" (change)="onFileSelected($event)" />
+    <input type="file" (change)="onFileSelected($event)" accept="image/*" />
   </ion-item>
+
+  <!-- Mostrar la previsualización de la imagen seleccionada -->
+  <ion-item *ngIf="imagePreview">
+    <img [src]="imagePreview" alt="Previsualización de la imagen"
+      style="max-width: 100%; height: auto; border-radius: 10px;" />
+  </ion-item>
+
   <ion-item *ngIf="!isImage">
     <ion-label position="floating">Nuevo valor</ion-label>
     <ion-input [(ngModel)]="newValue"></ion-input>
   </ion-item>
+
   <ion-button expand="full" (click)="save()">Guardar</ion-button>
 </ion-content>

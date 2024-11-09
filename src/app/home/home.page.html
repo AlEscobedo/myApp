@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true" class="colorFondo">
   <div class="container">
     <ion-card>
-      <img alt="Silhouette of mountains" src="assets/imagenes/imgPredeterminada.png"/>
+      <img [src]="imageUrl" alt="Imagen de perfil"/>
       <ion-card-header>
         <ion-card-title>
           <h1>
@@ -24,7 +24,7 @@
         </ion-item>
         <br>
         <ion-card-subtitle>
-          <ion-checkbox>Recordarme</ion-checkbox>
+          <ion-checkbox [(ngModel)]="rememberMe">Recordarme</ion-checkbox>
         </ion-card-subtitle>
         <br>
         <ion-button color="dark" (click)="login()">

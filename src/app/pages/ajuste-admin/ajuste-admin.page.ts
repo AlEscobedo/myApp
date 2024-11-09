@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { EditModalAjusteAdminComponent } from 'src/app/components/edit-modal-ajuste-admin/edit-modal-ajuste-admin.component';
+import { ImageService } from 'src/app/services/image.service';
 
 @Component({
   selector: 'app-ajuste-admin',
@@ -15,9 +16,12 @@ export class AjusteAdminPage implements OnInit {
   password: string = '********';
   imageUrl: string = ''; // Aquí defines la propiedad imageUrl
 
-  constructor(private router: Router, private modalController: ModalController) { }
+  constructor(private router: Router, private modalController: ModalController, private imageService: ImageService) { }
 
   ngOnInit() {
+    this.imageService.getImage$().subscribe(url => {
+      this.imageUrl = url;  // Actualiza la propiedad local cuando el servicio emite un nuevo valor
+    });
   }
   async IrInicioAdmin() {
     this.router.navigate(['/inicio-admin']);
@@ -32,16 +36,17 @@ export class AjusteAdminPage implements OnInit {
         isImage: true, // Indica que se está editando una imagen
       },
     });
-  
+
     modal.onDidDismiss().then((result) => {
       if (result.data) {
-        this.imageUrl = result.data; // Actualiza el valor con la nueva imagen
+        this.imageUrl = result.data; // Actualiza el valor local con la nueva imagen
+        this.imageService.setImage(result.data); // Actualiza la imagen en el servicio
       }
     });
-  
+
     return await modal.present();
   }
-  
+
 
   async openUserModal() {
     const modal = await this.modalController.create({
