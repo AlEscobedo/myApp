@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonModal, AlertController } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
+import { BaseDatosService } from 'src/app/services/base-datos.service';
 
 @Component({
   selector: 'app-menu-lista',
@@ -14,26 +15,31 @@ export class MenuListaComponent implements OnInit {
   @ViewChild('modalCrearCategoria') modalCrearCategoria!: IonModal;
 
   message = 'Este modal se abre cuando el botón es presionado.';
-  
+
   // Variables para modificación de producto y categoría
   nombreProducto: string = "";
   descripcionProducto: string = "";
   valorProducto: string = "";
-  
+
   nombreCategoria: string = "";
   descripcionCategoria: string = "";
-  
+
   // Variables para creación de producto y categoría
   nombreNuevoProducto: string = "";
   descripcionNuevoProducto: string = "";
   valorNuevoProducto: string = "";
-  
+
   nombreNuevaCategoria: string = "";
   descripcionNuevaCategoria: string = "";
 
-  constructor(private alertController: AlertController) {}
+  constructor(private alertController: AlertController, private baseDatosService: BaseDatosService) { }
 
-  ngOnInit() {}
+  categorias: any[] = [];
+  ngOnInit() {
+    this.baseDatosService.obtenerCategorias().subscribe(data => {
+      this.categorias = data;
+    });
+  }
 
   // Cerrar el modal específico
   cancel(modalType: string) {
@@ -132,4 +138,10 @@ export class MenuListaComponent implements OnInit {
       this.message = `${modalType === 'producto' ? 'Producto' : 'Categoría'} eliminado.`;
     }
   }
+
+
+
+  // BASE DE DATOS //
+
+
 }

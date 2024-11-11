@@ -9,6 +9,15 @@
     </ion-card-header>
   </ion-card>
 
+  <ion-card>
+    <h1>Categorías prubeba bd con firebase en celular</h1>
+    <ul>
+      <li *ngFor="let categoria of categorias">
+        {{ categoria.categoria }} {{ categoria.subcategorias }}
+      </li>
+    </ul>
+  </ion-card>
+
   <!-- Tarjeta con opciones para agregar producto y categoría -->
   <ion-card>
     <ion-card-header>
