@@ -290,14 +290,13 @@
           </ion-buttons>
           <ion-title>Detalles de la Categoría</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="confirm('categoria')" [strong]="true">Guardar</ion-button>
+            <ion-button (click)="actualizarCategoria()" [strong]="true">Guardar</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
         <ion-item>
-          <ion-input label="Nombre Categoria" labelPlacement="stacked" type="text" placeholder="Nombre de la categoría"
-            [(ngModel)]="nombreCategoria"></ion-input>
+          <ion-input label="Nuevo Nombre" labelPlacement="stacked" [(ngModel)]="nuevoNombre" placeholder="Nuevo nombre de la categoría"></ion-input>
         </ion-item>
         <!-- <ion-item>
           <ion-input label="Descripcion Categoria" labelPlacement="stacked" type="text"
@@ -343,6 +342,4 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-
-
 </ion-content>

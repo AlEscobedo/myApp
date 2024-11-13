@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonModal, AlertController, ToastController } from '@ionic/angular';
+import { IonModal, AlertController, ToastController, ModalController } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
 import { BaseDatosService } from 'src/app/services/base-datos.service';
 
@@ -16,111 +16,172 @@ export class MenuListaComponent implements OnInit {
   @ViewChild('modalCrearCategoria') modalCrearCategoria!: IonModal;
   @ViewChild('modalCrearSubCategoria') modalCrearSubCategoria!: IonModal;
 
+  // Mensaje por defecto para mostrar en los modales
   message = 'Este modal se abre cuando el botón es presionado.';
 
-  // Variables para modificación de producto y categoría
-  nombreProducto: string = "";
-  descripcionProducto: string = "";
-  valorProducto: string = "";
+  // Variables para modificación de producto, categoría y subcategoría
+  nombreProducto = '';
+  descripcionProducto = '';
+  valorProducto = '';
+  nombreCategoria = '';
+  nombreSubCategoria = '';
+  descripcionSubCategoria = '';
 
-  nombreCategoria: string = "";
-  //descripcionCategoria: string = "";
+  // Variables para creación de producto, categoría y subcategoría
+  nombreNuevoProducto = '';
+  descripcionNuevoProducto = '';
+  valorNuevoProducto = '';
+  nombreNuevaCategoria = '';
+  nombreNuevaSubCategoria = '';
+  descripcionNuevaSubCategoria = '';
 
-  nombreSubCategoria: string = "";
-  descripcionSubCategoria: string = "";
+  idCategoria: string = '';  // ID de la categoría a actualizar
+  nuevoNombre: string = '';  // Nuevo nombre para la categoría
 
-  // Variables para creación de producto y categoría
-  nombreNuevoProducto: string = "";
-  descripcionNuevoProducto: string = "";
-  valorNuevoProducto: string = "";
-
-  nombreNuevaCategoria: string = "";
-  //descripcionNuevaCategoria: string = "";
-
-  nombreNuevaSubCategoria: string = "";
-  descripcionNuevaSubCategoria: string = "";
-
-  constructor(private alertController: AlertController, private baseDatosService: BaseDatosService, private toastController: ToastController) { }
-
+  // Lista de categorías para mostrar en el componente
   categorias: any[] = [];
+
+  constructor(
+    private alertController: AlertController,
+    private baseDatosService: BaseDatosService,
+    private toastController: ToastController,
+  private modalController: ModalController
+  ) { }
+
   ngOnInit() {
-    this.baseDatosService.obtenerCategorias().subscribe(data => {
+    // Cargar las categorías desde la base de datos al inicializar el componente
+    this.baseDatosService.obtenerCategorias().subscribe((data) => {
       this.categorias = data;
     });
   }
 
   // Cerrar el modal específico
   cancel(modalType: string) {
-    if (modalType === 'producto') {
-      this.modalProducto.dismiss(null, 'cancel');
-    } else if (modalType === 'categoria') {
-      this.modalCategoria.dismiss(null, 'cancel');
-    } else if (modalType === 'subCategoria') {
-      this.modalSubCategoria.dismiss(null, 'cancel');
-    } else if (modalType === 'crearProducto') {
-      this.modalCrearProducto.dismiss(null, 'cancel');
-    } else if (modalType === 'crearCategoria') {
-      this.modalCrearCategoria.dismiss(null, 'cancel');
-    } else if (modalType === 'crearSubCategoria') {
-      this.modalCrearSubCategoria.dismiss(null, 'cancel');
+    switch (modalType) {
+      case 'producto':
+        this.modalProducto.dismiss(null, 'cancel');
+        break;
+      case 'categoria':
+        this.modalCategoria.dismiss(null, 'cancel');
+        break;
+      case 'subCategoria':
+        this.modalSubCategoria.dismiss(null, 'cancel');
+        break;
+      case 'crearProducto':
+        this.modalCrearProducto.dismiss(null, 'cancel');
+        break;
+      case 'crearCategoria':
+        this.modalCrearCategoria.dismiss(null, 'cancel');
+        break;
+      case 'crearSubCategoria':
+        this.modalCrearSubCategoria.dismiss(null, 'cancel');
+        break;
     }
   }
 
-  // Guardar cambios en el modal específico
+  // Guardar los cambios y cerrar el modal correspondiente
   confirm(modalType: string) {
-    if (modalType === 'producto') {
-      this.modalProducto.dismiss({
-        nombreProducto: this.nombreProducto,
-        descripcionProducto: this.descripcionProducto,
-        valorProducto: this.valorProducto,
-      }, 'confirm');
-    } else if (modalType === 'categoria') {
-      this.modalCategoria.dismiss({
-        nombreCategoria: this.nombreCategoria,
-        //descripcionCategoria: this.descripcionCategoria,
-      }, 'confirm');
-    } else if (modalType === 'subCategoria') {
-      this.modalSubCategoria.dismiss({
-        nombreSubCategoria: this.nombreSubCategoria,
-        descripcionSubCategoria: this.descripcionSubCategoria,
-      }, 'confirm');
-    }
-    else if (modalType === 'crearProducto') {
-      this.modalCrearProducto.dismiss({
-        nombreNuevoProducto: this.nombreNuevoProducto,
-        descripcionNuevoProducto: this.descripcionNuevoProducto,
-        valorNuevoProducto: this.valorNuevoProducto,
-      }, 'confirm');
-
-    } else if (modalType === 'crearCategoria') {
-      this.baseDatosService.agregarCategoria({
-        categoria: this.nombreNuevaCategoria,
-      }).then((response) => {
-        console.log('Categoría creada', response);
-        this.modalCrearCategoria.dismiss({
-          nombreNuevaCategoria: this.nombreNuevaCategoria
-        }, 'confirm');
-        // Actualizar la lista de categorías después de agregar una nueva
-        this.baseDatosService.obtenerCategorias().subscribe(data => {
-          this.categorias = data;
-        });
-      }).catch((error) => {
-        console.error('Error al crear categoría', error);
-      });
-
-    } else if (modalType === 'crearSubCategoria') {
-      this.modalCrearSubCategoria.dismiss({
-        nombreNuevaSubCategoria: this.nombreNuevaSubCategoria,
-        descripcionNuevaSubCategoria: this.descripcionNuevaSubCategoria,
-      }, 'confirm');
+    switch (modalType) {
+      case 'producto':
+        this.modalProducto.dismiss(
+          {
+            nombreProducto: this.nombreProducto,
+            descripcionProducto: this.descripcionProducto,
+            valorProducto: this.valorProducto,
+          },
+          'confirm'
+        );
+        break;
+      case 'categoria':
+        this.modalCategoria.dismiss(
+          {
+            nombreCategoria: this.nombreCategoria,
+          },
+          'confirm'
+        );
+        break;
+      case 'subCategoria':
+        this.modalSubCategoria.dismiss(
+          {
+            nombreSubCategoria: this.nombreSubCategoria,
+            descripcionSubCategoria: this.descripcionSubCategoria,
+          },
+          'confirm'
+        );
+        break;
+      case 'crearProducto':
+        this.modalCrearProducto.dismiss(
+          {
+            nombreNuevoProducto: this.nombreNuevoProducto,
+            descripcionNuevoProducto: this.descripcionNuevoProducto,
+            valorNuevoProducto: this.valorNuevoProducto,
+          },
+          'confirm'
+        );
+        break;
+      case 'crearCategoria':
+        this.baseDatosService
+          .agregarCategoria({ categoria: this.nombreNuevaCategoria })
+          .then((response) => {
+            console.log('Categoría creada', response);
+            this.modalCrearCategoria.dismiss(
+              { nombreNuevaCategoria: this.nombreNuevaCategoria },
+              'confirm'
+            );
+            // Actualizar la lista de categorías después de agregar una nueva
+            this.baseDatosService.obtenerCategorias().subscribe((data) => {
+              this.categorias = data;
+            });
+          })
+          .catch((error) => {
+            console.error('Error al crear categoría', error);
+          });
+        break;
+      case 'crearSubCategoria':
+        this.modalCrearSubCategoria.dismiss(
+          {
+            nombreNuevaSubCategoria: this.nombreNuevaSubCategoria,
+            descripcionNuevaSubCategoria: this.descripcionNuevaSubCategoria,
+          },
+          'confirm'
+        );
+        break;
     }
   }
+
+  // Método para actualizar la categoría
+  actualizarCategoria() {
+    console.log('Nombre de categoría a actualizar:', this.nombreCategoria);
+    console.log('Nuevo nombre de categoría:', this.nuevoNombre);
+  
+    if (!this.nombreCategoria || !this.nuevoNombre) {
+      console.error('Nombre de categoría o nuevo nombre no válidos');
+      return;
+    }
+  
+    this.baseDatosService.actualizarCategoriaPorNombre(this.nombreCategoria, this.nuevoNombre)
+      .then(() => {
+        console.log('Categoría actualizada con éxito');
+        this.presentToast('Categoría actualizada correctamente');
+        
+        // Cerrar el modal
+        this.modalController.dismiss();  // Esto cerrará el modal
+        
+        // Opcionalmente, puedes mostrar un mensaje de éxito (toast o alert)
+      })
+      .catch((error) => {
+        console.error('Error al actualizar la categoría', error);
+      });
+  }
+  
+  
 
   // Eliminar acción con confirmación en el modal específico
   async delete(modalType: string) {
     const alert = await this.alertController.create({
       header: 'Confirmar Eliminación',
-      message: `¿Estás seguro que deseas eliminar este ${modalType === 'producto' ? 'Producto' : modalType === 'categoria' ? 'Categoria' : 'SubCategoría'}?`,
+      message: `¿Estás seguro que deseas eliminar este ${modalType === 'producto' ? 'Producto' : modalType === 'categoria' ? 'Categoría' : 'SubCategoría'
+        }?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -130,16 +191,20 @@ export class MenuListaComponent implements OnInit {
           text: 'Eliminar',
           role: 'destructive',
           handler: () => {
-            if (modalType === 'producto') {
-              this.eliminarProducto();
-            } else if (modalType === 'categoria') {
-              this.eliminarCategoria();
-            } else if (modalType === 'subCategoria') {
-              this.eliminarSubCategoria();
+            switch (modalType) {
+              case 'producto':
+                this.eliminarProducto();
+                break;
+              case 'categoria':
+                this.eliminarCategoria();
+                break;
+              case 'subCategoria':
+                this.eliminarSubCategoria();
+                break;
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     await alert.present();
@@ -162,26 +227,26 @@ export class MenuListaComponent implements OnInit {
         this.presentToast('Error al eliminar la categoría');
       }
     }
-    console.log('Categoría eliminada');
     this.modalCategoria.dismiss(null, 'eliminar');
   }
+
+  // Mostrar un mensaje emergente (toast) con un mensaje específico
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
       duration: 2000,
-      position: 'bottom'
+      position: 'bottom',
     });
     await toast.present();
   }
 
-
-  // Acción para eliminar la SubCategoría
+  // Acción para eliminar la subcategoría
   eliminarSubCategoria() {
     console.log('SubCategoría eliminada');
     this.modalSubCategoria.dismiss(null, 'eliminar');
   }
 
-  // Manejar el cierre de los modales
+  // Manejar el cierre de los modales, mostrando el mensaje adecuado
   onWillDismiss(event: Event, modalType: string) {
     const ev = event as CustomEvent<OverlayEventDetail<any>>;
     if (ev.detail.role === 'confirm') {
@@ -189,14 +254,14 @@ export class MenuListaComponent implements OnInit {
       if (modalType === 'producto' && data) {
         this.message = `Producto guardado: ${data.nombreProducto}, ${data.descripcionProducto}, ${data.valorProducto}`;
       } else if (modalType === 'categoria' && data) {
-        this.message = `Categoría guardada: ${data.nombreCategoria}, ${data.descripcionCategoria}`;
+        this.message = `Categoría guardada: ${data.nombreCategoria}`;
       } else if (modalType === 'subCategoria' && data) {
-        this.message = `Sub Categoría guardada: ${data.nombreSubCategoria}, ${data.descripcionSubCategoria}`;
+        this.message = `SubCategoría guardada: ${data.nombreSubCategoria}, ${data.descripcionSubCategoria}`;
       } else if (modalType === 'crearProducto' && data) {
         this.message = `Producto creado: ${data.nombreNuevoProducto}, ${data.descripcionNuevoProducto}, ${data.valorNuevoProducto}`;
       } else if (modalType === 'crearCategoria' && data) {
         this.message = `Categoría creada: ${data.nombreNuevaCategoria}`;
-        this.baseDatosService.obtenerCategorias().subscribe(data => {
+        this.baseDatosService.obtenerCategorias().subscribe((data) => {
           this.categorias = data;
         });
       } else if (modalType === 'crearSubCategoria' && data) {
@@ -207,24 +272,24 @@ export class MenuListaComponent implements OnInit {
     }
   }
 
+  // Abre el modal correspondiente según el tipo de elemento (producto, categoría, subcategoría)
   openModal(type: string, item: any) {
-    if (type === 'producto') {
-      // Abre el modal de producto y pasa los detalles
-      this.nombreProducto = item.nombre;
-      this.descripcionProducto = item.descripcion;
-      this.valorProducto = item.precio;
-      this.modalProducto.present();
-    } else if (type === 'categoria') {
-      this.nombreCategoria = item.categoria;
-      //this.descripcionCategoria = item.descripcion;
-      this.modalCategoria.present();
-    } else if (type === 'subCategoria') {
-      this.nombreSubCategoria = item.nombre;
-      this.descripcionSubCategoria = item.descripcion;
-      this.modalSubCategoria.present();
+    switch (type) {
+      case 'producto':
+        this.nombreProducto = item.nombre;
+        this.descripcionProducto = item.descripcion;
+        this.valorProducto = item.precio;
+        this.modalProducto.present();
+        break;
+      case 'categoria':
+        this.nombreCategoria = item.categoria;
+        this.modalCategoria.present();
+        break;
+      case 'subCategoria':
+        this.nombreSubCategoria = item.nombre;
+        this.descripcionSubCategoria = item.descripcion;
+        this.modalSubCategoria.present();
+        break;
     }
   }
-
-
-
 }
