@@ -9,27 +9,21 @@
     </ion-card-header>
   </ion-card>
 
-  <ion-card>
-    <h1>Categorías prubeba bd con firebase en celular</h1>
-    <ul>
-      <li *ngFor="let categoria of categorias">
-        {{ categoria.categoria }} {{ categoria.subcategorias }}
-      </li>
-    </ul>
-  </ion-card>
-
   <!-- Tarjeta con opciones para agregar producto y categoría -->
   <ion-card>
     <ion-card-header>
       <ion-card-title>Gestión de Inventario</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-button id="open-create-product-modal" expand="block" class="button-coffee">
-        Agregar Nuevo Producto
-      </ion-button>
       <ion-button id="open-create-category-modal" expand="block" class="button-coffee">
         Agregar Nueva Categoría
+      </ion-button>      
+      <ion-button id="open-create-subCategory-modal" expand="block" class="button-coffee">
+        Agregar Nueva SubCategoría
       </ion-button>
+      <ion-button id="open-create-product-modal" expand="block" class="button-coffee">
+        Agregar Nuevo Producto
+      </ion-button>      
     </ion-card-content>
   </ion-card>
 
@@ -85,16 +79,44 @@
           <ion-input label="Nombre de la Categoría" labelPlacement="stacked" type="text"
             placeholder="Nombre de la categoría" [(ngModel)]="nombreNuevaCategoria"></ion-input>
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
           <ion-input label="Descripción de la Categoría" labelPlacement="stacked" type="text"
             placeholder="Descripción de la categoría" [(ngModel)]="descripcionNuevaCategoria"></ion-input>
+        </ion-item> -->
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal para Crear Nueva Sub Categoría -->
+  <ion-modal #modalCrearSubCategoria trigger="open-create-subCategory-modal"
+    (willDismiss)="onWillDismiss($event, 'crearSubCategoria')">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel('crearSubCategoria')">Salir</ion-button>
+          </ion-buttons>
+          <ion-title class="centered-title">Crear Nueva SubCategoría</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirm('crearSubCategoria')" [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input label="Nombre de la Sub Categoría" labelPlacement="stacked" type="text"
+            placeholder="Nombre de la Sub categoría" [(ngModel)]="nombreNuevaSubCategoria"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Descripción de la SubCategoría" labelPlacement="stacked" type="text"
+            placeholder="Descripción de la Sub Categoría" [(ngModel)]="descripcionNuevaSubCategoria"></ion-input>
         </ion-item>
       </ion-content>
     </ng-template>
   </ion-modal>
 
 
-  <ion-card>
+  <!-- <ion-card>
     <ion-card-header>
       <ion-item>
         <ion-col class="ion-text-center">
@@ -155,11 +177,75 @@
         </ion-item>
       </ion-list>
     </ion-card-content>
+  </ion-card> -->
+
+
+
+
+  <ion-card *ngFor="let categoria of categorias">
+    <ion-card-header>
+      <ion-item lines="none">
+        <ion-col class="ion-text-center">
+          <ion-card-title> {{ categoria.categoria }} </ion-card-title>
+          <ion-card-subtitle>  categoria.descripcion  </ion-card-subtitle>
+        </ion-col>
+        <ion-button  fill="clear" size="large" color="primary" (click)="openModal('categoria', categoria)">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-card-header>
+  
+    <ion-card-content>
+      <ion-list>
+        <!-- Iterar sobre las subcategorías de cada categoría -->
+        <ion-item *ngFor="let subcategoria of categoria.subcategorias" lines="full">
+          <ion-label>
+            <h3> {{ subcategoria }} </h3>
+            <p>  subcategoria.descripcion  </p>
+          </ion-label>
+          <ion-button  fill="clear" size="large" color="primary" slot="end" (click)="openModal('subCategoria', subcategoria)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+  
+        <!-- Iterar sobre los productos de cada subcategoría-->
+         
+        <ion-list> <!--*ngFor="let subcategoria of categoria.subcategorias"-->
+          <ion-item> <!-- *ngFor="let producto of subcategoria.productos" lines="full" -->
+            <ion-thumbnail slot="start">
+              <img alt="Imagen del producto" src="assets/imagenes/imgPredeterminada.png" />
+            </ion-thumbnail>
+            <ion-label>
+              <h2>  producto.nombre  </h2>
+              <p>  producto.descripcion  </p>
+              <p> $ producto.precio </p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button  color="primary">  <!-- (click)="openModal('producto', producto)" -->
+                <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list> 
+      </ion-list>
+    </ion-card-content>
   </ion-card>
+  
+  
+
+
+
+
+
+
+
+
+
+
 
 
   <!-- Modal para Ajuste Producto -->
-  <ion-modal #modalProducto trigger="open-modal-1" (willDismiss)="onWillDismiss($event, 'producto')">
+  <ion-modal #modalProducto (willDismiss)="onWillDismiss($event, 'producto')">
     <ng-template>
       <ion-header>
         <ion-toolbar>
@@ -195,7 +281,7 @@
   </ion-modal>
 
   <!-- Modal para Detalles Categoria -->
-  <ion-modal #modalCategoria trigger="open-modal-2" (willDismiss)="onWillDismiss($event, 'categoria')">
+  <ion-modal #modalCategoria  (willDismiss)="onWillDismiss($event, 'categoria')">
     <ng-template>
       <ion-header>
         <ion-toolbar>
@@ -213,13 +299,45 @@
           <ion-input label="Nombre Categoria" labelPlacement="stacked" type="text" placeholder="Nombre de la categoría"
             [(ngModel)]="nombreCategoria"></ion-input>
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
           <ion-input label="Descripcion Categoria" labelPlacement="stacked" type="text"
             placeholder="Descripción de la categoría" [(ngModel)]="descripcionCategoria"></ion-input>
-        </ion-item>
+        </ion-item> -->
         <div class="ion-margin-top">
           <ion-button expand="block" color="danger" (click)="delete('categoria')">
             Eliminar Categoria
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal para Detalles SubCategoria -->
+  <ion-modal #modalSubCategoria  (willDismiss)="onWillDismiss($event, 'subCategoria')">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel('subCategoria')">Salir</ion-button>
+          </ion-buttons>
+          <ion-title>Detalles de la Subcategoría</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirm('subCategoria')" [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-input label="Nombre SubCategoria" labelPlacement="stacked" type="text" placeholder="Nombre de la Subcategoría"
+            [(ngModel)]="nombreSubCategoria"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Descripcion Subcategoria" labelPlacement="stacked" type="text"
+            placeholder="Descripción de la Subcategoría" [(ngModel)]="descripcionSubCategoria"></ion-input>
+        </ion-item>
+        <div class="ion-margin-top">
+          <ion-button expand="block" color="danger" (click)="delete('subCategoria')">
+            Eliminar Subcategoria
           </ion-button>
         </div>
       </ion-content>
