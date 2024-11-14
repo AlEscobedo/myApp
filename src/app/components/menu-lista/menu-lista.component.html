@@ -77,7 +77,7 @@
       <ion-content class="ion-padding">
         <ion-item>
           <ion-input label="Nombre de la Categoría" labelPlacement="stacked" type="text"
-            placeholder="Nombre de la categoría" [(ngModel)]="nombreNuevaCategoria"></ion-input>
+            placeholder="Nombre para la nueva categoria" [(ngModel)]="nombreNuevaCategoria"></ion-input>
         </ion-item>
         <!-- <ion-item>
           <ion-input label="Descripción de la Categoría" labelPlacement="stacked" type="text"
@@ -296,7 +296,7 @@
       </ion-header>
       <ion-content class="ion-padding">
         <ion-item>
-          <ion-input label="Nuevo Nombre" labelPlacement="stacked" [(ngModel)]="nuevoNombre" placeholder="Nuevo nombre de la categoría"></ion-input>
+          <ion-input label="Nuevo Nombre" labelPlacement="stacked" [(ngModel)]="nuevoNombre" placeholder="{{nombreCategoria}}"></ion-input>
         </ion-item>
         <!-- <ion-item>
           <ion-input label="Descripcion Categoria" labelPlacement="stacked" type="text"

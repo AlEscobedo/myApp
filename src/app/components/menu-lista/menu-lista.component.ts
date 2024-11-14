@@ -72,6 +72,7 @@ export class MenuListaComponent implements OnInit {
         break;
       case 'crearCategoria':
         this.modalCrearCategoria.dismiss(null, 'cancel');
+        this.nombreNuevaCategoria = '';
         break;
       case 'crearSubCategoria':
         this.modalCrearSubCategoria.dismiss(null, 'cancel');
@@ -119,24 +120,29 @@ export class MenuListaComponent implements OnInit {
           'confirm'
         );
         break;
-      case 'crearCategoria':
-        this.baseDatosService
-          .agregarCategoria({ categoria: this.nombreNuevaCategoria })
-          .then((response) => {
-            console.log('Categoría creada', response);
-            this.modalCrearCategoria.dismiss(
-              { nombreNuevaCategoria: this.nombreNuevaCategoria },
-              'confirm'
-            );
-            // Actualizar la lista de categorías después de agregar una nueva
-            this.baseDatosService.obtenerCategorias().subscribe((data) => {
-              this.categorias = data;
+        case 'crearCategoria':
+          if (!this.nombreNuevaCategoria.trim()) {  // Verifica que no esté vacío
+            this.presentToast('El nombre de la categoría no puede estar vacío');
+            return;  // Salir sin crear la categoría
+          }
+          
+          this.baseDatosService
+            .agregarCategoria({ categoria: this.nombreNuevaCategoria })
+            .then((response) => {
+              console.log('Categoría creada', response);
+              this.modalCrearCategoria.dismiss(
+                { nombreNuevaCategoria: this.nombreNuevaCategoria },
+                'confirm'
+              );
+              // Actualizar la lista de categorías después de agregar una nueva
+              this.baseDatosService.obtenerCategorias().subscribe((data) => {
+                this.categorias = data;
+              });
+            })
+            .catch((error) => {
+              console.error('Error al crear categoría', error);
             });
-          })
-          .catch((error) => {
-            console.error('Error al crear categoría', error);
-          });
-        break;
+          break;
       case 'crearSubCategoria':
         this.modalCrearSubCategoria.dismiss(
           {
@@ -273,23 +279,15 @@ export class MenuListaComponent implements OnInit {
   }
 
   // Abre el modal correspondiente según el tipo de elemento (producto, categoría, subcategoría)
-  openModal(type: string, item: any) {
-    switch (type) {
-      case 'producto':
-        this.nombreProducto = item.nombre;
-        this.descripcionProducto = item.descripcion;
-        this.valorProducto = item.precio;
-        this.modalProducto.present();
-        break;
-      case 'categoria':
-        this.nombreCategoria = item.categoria;
-        this.modalCategoria.present();
-        break;
-      case 'subCategoria':
-        this.nombreSubCategoria = item.nombre;
-        this.descripcionSubCategoria = item.descripcion;
-        this.modalSubCategoria.present();
-        break;
-    }
+
+openModal(tipo: string, item: any) {
+  if (tipo === 'categoria') {
+    this.nombreCategoria = item.categoria; // Asignar el nombre de la categoría seleccionada    
+    this.modalCategoria.present(); // Muestra el modal de categoría
+  } else if (tipo === 'subCategoria') {
+    this.nombreSubCategoria = item.nombre; // Asigna el nombre de la subcategoría seleccionada
+    this.descripcionSubCategoria = item.descripcion || ''; // Asigna la descripción si existe
+    this.modalSubCategoria.present(); // Muestra el modal de subcategoría
   }
+}
 }
