@@ -51,7 +51,7 @@ export class MenuListaComponent implements OnInit {
 
     // Cargar los productos desde la base de datos al inicializar el componente
     this.baseDatosService.obtenerProductos().subscribe((data) => {
-      this.productos = data;      
+      this.productos = data;
     });
   }
 
@@ -244,13 +244,13 @@ export class MenuListaComponent implements OnInit {
   actualizarSubCategoria(categoriaSeleccionada: string, nuevoNombreSubCategoria: string) {
     console.log("Categoría seleccionada:", categoriaSeleccionada);
     console.log("Nuevo nombre de la subcategoría:", nuevoNombreSubCategoria);
-  
+
     // Validación básica
     if (!categoriaSeleccionada.trim() || !nuevoNombreSubCategoria.trim()) {
       this.presentToast('Debe completar todos los campos.');
       return;
     }
-  
+
     // Llama al método del servicio para actualizar la subcategoría
     this.baseDatosService.actualizarSubCategoria(
       this.categoriaSeleccionada,
@@ -260,10 +260,10 @@ export class MenuListaComponent implements OnInit {
       .then(() => {
         console.log('Subcategoría actualizada con éxito');
         this.presentToast('Subcategoría actualizada correctamente.');
-  
+
         // Cerrar el modal
         this.modalController.dismiss();
-  
+
         // Actualizar la lista de categorías para reflejar los cambios
         this.baseDatosService.obtenerCategorias().subscribe(data => {
           this.categorias = data;
@@ -274,7 +274,7 @@ export class MenuListaComponent implements OnInit {
         this.presentToast('Hubo un error al actualizar la subcategoría.');
       });
   }
-  
+
 
 
 
@@ -416,6 +416,16 @@ export class MenuListaComponent implements OnInit {
       this.modalSubCategoria.present();                  // Muestra el modal de subcategoría
     }
   }
+
+  // Agregamos un nuevo método en el componente para filtrar productos según la subcategoría
+  getProductosPorSubcategoria(subcategoria: string) {
+    // Filtramos los productos comparando las categorías en minúsculas
+    return this.productos.filter(producto => {
+      const categoriaProducto = producto.categoria.toLowerCase(); // Asegúrate de que la categoría esté en minúsculas
+      return categoriaProducto === subcategoria.toLowerCase(); // Compara con la subcategoría en minúsculas
+    });
+  }
+
 
 
 }

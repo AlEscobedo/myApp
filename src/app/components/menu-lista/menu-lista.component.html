@@ -110,6 +110,7 @@
     </ng-template>
   </ion-modal>
 
+
   <ion-card>
     <ion-card-content>
       <ion-accordion-group>
@@ -117,32 +118,50 @@
         <ion-accordion *ngFor="let categoria of categorias" [value]="categoria.categoria">
           <!-- Encabezado de la categoría -->
           <ion-item slot="header" color="light" lines="none">
-            <ion-label>{{ categoria.categoria }}</ion-label>
+            <ion-label>{{ categoria.categoria }} </ion-label>
             <ion-button fill="clear" size="large" color="primary" slot="end"
               (click)="openModal('categoria', categoria)">
               <ion-icon name="create-outline"></ion-icon>
             </ion-button>
           </ion-item>
-
+  
           <!-- Contenido de las subcategorías -->
           <div slot="content">
-            <ion-list>
-              <ion-item *ngFor="let subcategoria of categoria.subcategorias" lines="full">
-                <ion-label>
-                  <h3>{{ subcategoria }}</h3>
-                </ion-label>
-                <ion-button fill="clear" size="large" color="primary" slot="end"
-                  (click)="openModal('subCategoria', { categoria: categoria.categoria, subcategoria: subcategoria })">
-                  <ion-icon name="create-outline"></ion-icon>
-                </ion-button>
-              </ion-item>
-            </ion-list>
+            <ion-accordion-group>
+              <ion-accordion *ngFor="let subcategoria of categoria.subcategorias" [value]="subcategoria">
+                <!-- Encabezado de la subcategoría con color más claro -->
+                <ion-item slot="header" color="lighter" lines="none">
+                  <ion-label>{{ subcategoria }}</ion-label>
+                  <ion-button fill="clear" size="large" color="primary" slot="end"
+                    (click)="openModal('subCategoria', { categoria: categoria.categoria, subcategoria: subcategoria })">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+  
+                <!-- Contenido de los productos de esta subcategoría -->
+                <div slot="content">
+                  <!-- Filtrar productos que coinciden con la subcategoría -->
+                  <ion-list *ngIf="getProductosPorSubcategoria(subcategoria).length > 0">
+                    <ion-item *ngFor="let producto of getProductosPorSubcategoria(subcategoria)">
+                      <ion-label>
+                        <h4>{{ producto.nombre }}</h4>
+                      </ion-label>
+                    </ion-item>
+                  </ion-list>
+  
+                  <!-- Mensaje si no hay productos en esta subcategoría -->
+                  <div *ngIf="getProductosPorSubcategoria(subcategoria).length === 0">
+                    <p>No hay productos disponibles en esta subcategoría.</p>
+                  </div>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
           </div>
         </ion-accordion>
       </ion-accordion-group>
     </ion-card-content>
   </ion-card>
-
+  
   <ion-card *ngFor="let producto of productos">
     <ion-card-header>
       <ion-item lines="none">
