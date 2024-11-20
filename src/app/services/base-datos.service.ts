@@ -15,29 +15,17 @@ export class BaseDatosService {
     return this.firestore.collection('Categoria').valueChanges();
   }
 
+  // Método para obtener categorías
+  obtenerProductos(): Observable<any[]> {
+    return this.firestore.collection('Productos').valueChanges();
+  }
+
+
   // Método para agregar una nueva categoría
   agregarCategoria(categoria: any): Promise<void> {
     const id = this.firestore.createId();  // Crea un ID único para la nueva categoría
     return this.firestore.collection('Categoria').doc(id).set(categoria);  // Agrega la categoría a Firestore
   }
-
-  // Método para actualizar el nombre de una categoría
-  actualizarCategoriaPorNombre(nombreCategoria: string, nuevoNombre: string): Promise<void> {
-    return this.firestore.collection('Categoria', ref => ref.where('categoria', '==', nombreCategoria))
-      .get()
-      .toPromise()
-      .then(snapshot => {
-        if (snapshot && !snapshot.empty) {
-          // Obtener el id del primer documento encontrado
-          const docRef = snapshot.docs[0].ref;
-          return docRef.update({ categoria: nuevoNombre });  // Actualiza el nombre de la categoría
-        } else {
-          throw new Error('No se encontró ninguna categoría con ese nombre');
-        }
-      });
-  }
-  
-
 
   eliminarCategoriaPorNombre(nombreCategoria: string): Promise<void> {
     return this.firestore.collection('Categoria', ref => ref.where('categoria', '==', nombreCategoria))
@@ -55,5 +43,177 @@ export class BaseDatosService {
         }
       });
   }
+
+  // Método para verificar si una categoría ya existe
+  categoriaYaExiste(nombreCategoria: string): Promise<boolean> {
+    const nombreEnMayusculas = nombreCategoria.toUpperCase();
+    return this.firestore.collection('Categoria', ref =>
+      ref.where('categoria', '==', nombreEnMayusculas)
+    )
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (snapshot && snapshot.docs) {
+          return !snapshot.empty; // Devuelve true si existe, false si no.
+        }
+        return false; // Por defecto, considera que no existe.
+      });
+  }
+  // Método para actualizar el nombre de una categoría
+  actualizarCategoriaPorNombre(nombreCategoria: string, nuevoNombre: string): Promise<void> {
+    return this.firestore.collection('Categoria', ref => ref.where('categoria', '==', nombreCategoria))
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (!snapshot || snapshot.empty) {
+          throw new Error('No se encontró ninguna categoría con ese nombre');
+        }
+        // Obtener el id del primer documento encontrado
+        const docRef = snapshot.docs[0].ref;
+        return docRef.update({ categoria: nuevoNombre });  // Actualiza el nombre de la categoría
+      })
+      .catch((error) => {
+        throw new Error('Error al actualizar la categoría: ' + error.message);
+      });
+  }
+
+  
+
+
+  // Método para verificar si una subcategoría existe en una categoría específica
+  verificarSubCategoriaExistente(nombreCategoria: string, nombreSubCategoria: string): Promise<boolean> {
+    const nombreCategoriaMayusculas = nombreCategoria.toUpperCase(); // Hacer la comparación insensible a mayúsculas
+    const nombreSubCategoriaMayusculas = nombreSubCategoria.toUpperCase(); // Lo mismo para la subcategoría
+
+    return this.firestore.collection('Categoria', ref =>
+      ref.where('categoria', '==', nombreCategoriaMayusculas)
+    )
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (snapshot && !snapshot.empty) {  // Asegúrate de que snapshot no es undefined y tiene documentos
+          const categoria = snapshot.docs[0].data() as any; // Asegúrate de que el tipo de 'categoria' sea 'any' o más específico
+          const subcategorias: string[] = categoria['subcategorias'] || []; // Tipar explícitamente como un arreglo de strings
+
+          // Verificar si la subcategoría existe en el arreglo de subcategorias
+          return subcategorias.some((subcategoria: string) => subcategoria.toUpperCase() === nombreSubCategoriaMayusculas);
+        }
+        return false; // Si no se encuentra la categoría o si snapshot está vacío
+      });
+  }
+
+  // Método para agregar una subcategoría a una categoría
+  agregarSubCategoria(nombreCategoria: string, nombreSubCategoria: string): Promise<void> {
+    const nombreCategoriaMayusculas = nombreCategoria.toUpperCase(); // Hacer la comparación insensible a mayúsculas
+    const nombreSubCategoriaMayusculas = nombreSubCategoria.toUpperCase(); // Lo mismo para la subcategoría
+
+    return this.firestore.collection('Categoria', ref =>
+      ref.where('categoria', '==', nombreCategoriaMayusculas)
+    )
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (snapshot && !snapshot.empty) { // Verificar que snapshot tiene datos
+          const categoriaDoc = snapshot.docs[0]; // Obtener el primer documento de la categoría
+          const categoria = categoriaDoc.data() as any; // Obtener los datos de la categoría
+          const subcategorias: string[] = categoria['subcategorias'] || []; // Asegurarse de que subcategorias es un arreglo
+
+          // Verificar si la subcategoría ya existe
+          if (subcategorias.some(subcategoria => subcategoria.toUpperCase() === nombreSubCategoriaMayusculas)) {
+            throw new Error('La subcategoría ya existe en esta categoría.');
+          }
+
+          // Agregar la nueva subcategoría
+          subcategorias.push(nombreSubCategoria);
+
+          // Actualizar el documento de la categoría con la nueva subcategoría
+          return categoriaDoc.ref.update({ subcategorias });
+        } else {
+          throw new Error('No se encontró la categoría con ese nombre.');
+        }
+      })
+      .catch(error => {
+        throw new Error('Error al agregar la subcategoría: ' + error.message);
+      });
+  }
+
+  // Método para eliminar una subcategoría de una categoría
+  eliminarSubCategoria(nombreCategoria: string, nombreSubCategoria: string): Promise<void> {
+    const nombreCategoriaMayusculas = nombreCategoria.toUpperCase(); // Hacer la comparación insensible a mayúsculas
+    const nombreSubCategoriaMayusculas = nombreSubCategoria.toUpperCase(); // Lo mismo para la subcategoría
+
+    return this.firestore.collection('Categoria', ref =>
+      ref.where('categoria', '==', nombreCategoriaMayusculas)
+    )
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (snapshot && !snapshot.empty) { // Verificar que snapshot tiene datos
+          const categoriaDoc = snapshot.docs[0]; // Obtener el primer documento de la categoría
+          const categoria = categoriaDoc.data() as any; // Obtener los datos de la categoría
+          let subcategorias: string[] = categoria['subcategorias'] || []; // Asegurarse de que subcategorias es un arreglo
+
+          // Verificar si la subcategoría existe en la lista
+          const index = subcategorias.findIndex(subcategoria => subcategoria.toUpperCase() === nombreSubCategoriaMayusculas);
+          if (index === -1) {
+            throw new Error('La subcategoría no existe en esta categoría.');
+          }
+
+          // Eliminar la subcategoría de la lista
+          subcategorias.splice(index, 1);
+
+          // Actualizar el documento de la categoría con la nueva lista de subcategorías
+          return categoriaDoc.ref.update({ subcategorias });
+        } else {
+          throw new Error('No se encontró la categoría con ese nombre.');
+        }
+      })
+      .catch(error => {
+        throw new Error('Error al eliminar la subcategoría: ' + error.message);
+      });
+  }
+
+
+// Método para actualizar el nombre de una subcategoría
+actualizarSubCategoria(nombreCategoria: string, subCategoriaActual: string, nuevoNombreSubCategoria: string): Promise<void> {
+  const nombreCategoriaMayusculas = nombreCategoria.toUpperCase(); // Insensibilidad a mayúsculas
+  const subCategoriaActualMayusculas = subCategoriaActual.toUpperCase();
+  const nuevoNombreSubCategoriaMayusculas = nuevoNombreSubCategoria.toUpperCase();
+
+  return this.firestore.collection('Categoria', ref =>
+    ref.where('categoria', '==', nombreCategoriaMayusculas)
+  )
+    .get()
+    .toPromise()
+    .then(snapshot => {
+      if (snapshot && !snapshot.empty) { // Verificar que snapshot tiene datos
+        const categoriaDoc = snapshot.docs[0]; // Obtener el primer documento de la categoría
+        const categoria = categoriaDoc.data() as any; // Obtener los datos de la categoría
+        const subcategorias: string[] = categoria['subcategorias'] || []; // Asegurarse de que subcategorias es un arreglo
+
+        // Encontrar el índice de la subcategoría actual
+        const index = subcategorias.findIndex(subcategoria => subcategoria.toUpperCase() === subCategoriaActualMayusculas);
+        if (index === -1) {
+          throw new Error('La subcategoría no existe en esta categoría.');
+        }
+
+        // Verificar si el nuevo nombre ya existe
+        if (subcategorias.some(subcategoria => subcategoria.toUpperCase() === nuevoNombreSubCategoriaMayusculas)) {
+          throw new Error('Ya existe una subcategoría con el nuevo nombre.');
+        }
+
+        // Actualizar el nombre de la subcategoría
+        subcategorias[index] = nuevoNombreSubCategoria;
+
+        // Guardar los cambios en Firestore
+        return categoriaDoc.ref.update({ subcategorias });
+      } else {
+        throw new Error('No se encontró la categoría con ese nombre.');
+      }
+    })
+    .catch(error => {
+      throw new Error('Error al actualizar la subcategoría: ' + error.message);
+    });
+}
 
 }

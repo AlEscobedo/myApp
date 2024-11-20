@@ -20,38 +20,38 @@ export class MenuListaComponent implements OnInit {
   message = 'Este modal se abre cuando el botón es presionado.';
 
   // Variables para modificación de producto, categoría y subcategoría
-  nombreProducto = '';
-  descripcionProducto = '';
-  valorProducto = '';
   nombreCategoria = '';
-  nombreSubCategoria = '';
-  descripcionSubCategoria = '';
+  nombreSubCategoria: string = '';
 
   // Variables para creación de producto, categoría y subcategoría
-  nombreNuevoProducto = '';
-  descripcionNuevoProducto = '';
-  valorNuevoProducto = '';
   nombreNuevaCategoria = '';
-  nombreNuevaSubCategoria = '';
-  descripcionNuevaSubCategoria = '';
+  nombreNuevaSubCategoria: string = '';
+  categoriaSeleccionada: string = "";
+  nombreSubCategoriaSeleccionada: string = "";
 
   idCategoria: string = '';  // ID de la categoría a actualizar
   nuevoNombre: string = '';  // Nuevo nombre para la categoría
 
   // Lista de categorías para mostrar en el componente
   categorias: any[] = [];
+  productos: any[] = [];
 
   constructor(
     private alertController: AlertController,
     private baseDatosService: BaseDatosService,
     private toastController: ToastController,
-  private modalController: ModalController
+    private modalController: ModalController
   ) { }
 
   ngOnInit() {
     // Cargar las categorías desde la base de datos al inicializar el componente
     this.baseDatosService.obtenerCategorias().subscribe((data) => {
       this.categorias = data;
+    });
+
+    // Cargar los productos desde la base de datos al inicializar el componente
+    this.baseDatosService.obtenerProductos().subscribe((data) => {
+      this.productos = data;      
     });
   }
 
@@ -63,9 +63,11 @@ export class MenuListaComponent implements OnInit {
         break;
       case 'categoria':
         this.modalCategoria.dismiss(null, 'cancel');
+        this.nuevoNombre = '';
         break;
       case 'subCategoria':
         this.modalSubCategoria.dismiss(null, 'cancel');
+        this.nombreNuevaSubCategoria = '';
         break;
       case 'crearProducto':
         this.modalCrearProducto.dismiss(null, 'cancel');
@@ -86,9 +88,7 @@ export class MenuListaComponent implements OnInit {
       case 'producto':
         this.modalProducto.dismiss(
           {
-            nombreProducto: this.nombreProducto,
-            descripcionProducto: this.descripcionProducto,
-            valorProducto: this.valorProducto,
+            // agregar codigo
           },
           'confirm'
         );
@@ -104,8 +104,7 @@ export class MenuListaComponent implements OnInit {
       case 'subCategoria':
         this.modalSubCategoria.dismiss(
           {
-            nombreSubCategoria: this.nombreSubCategoria,
-            descripcionSubCategoria: this.descripcionSubCategoria,
+            nombreSubCategoriaSeleccionada: this.nombreSubCategoria,
           },
           'confirm'
         );
@@ -113,74 +112,174 @@ export class MenuListaComponent implements OnInit {
       case 'crearProducto':
         this.modalCrearProducto.dismiss(
           {
-            nombreNuevoProducto: this.nombreNuevoProducto,
-            descripcionNuevoProducto: this.descripcionNuevoProducto,
-            valorNuevoProducto: this.valorNuevoProducto,
+            // agregar codigo
           },
           'confirm'
         );
         break;
-        case 'crearCategoria':
-          if (!this.nombreNuevaCategoria.trim()) {  // Verifica que no esté vacío
-            this.presentToast('El nombre de la categoría no puede estar vacío');
-            return;  // Salir sin crear la categoría
-          }
-          
-          this.baseDatosService
-            .agregarCategoria({ categoria: this.nombreNuevaCategoria })
-            .then((response) => {
-              console.log('Categoría creada', response);
-              this.modalCrearCategoria.dismiss(
-                { nombreNuevaCategoria: this.nombreNuevaCategoria },
-                'confirm'
-              );
-              // Actualizar la lista de categorías después de agregar una nueva
-              this.baseDatosService.obtenerCategorias().subscribe((data) => {
+      case 'crearCategoria':
+        const nombreValidado = this.nombreNuevaCategoria.trim(); // Elimina espacios al inicio y al final
+
+        if (!nombreValidado) {  // Verifica que no esté vacío
+          this.presentToast('El nombre de la categoría no puede estar vacío ni contener solo espacios.');
+          return;
+        }
+
+        const nombreEnMayusculas = nombreValidado.toUpperCase(); // Convierte a mayúsculas para la validación
+
+        // Verifica si la categoría ya existe
+        this.baseDatosService.categoriaYaExiste(nombreEnMayusculas)
+          .then(existe => {
+            if (existe) {
+              this.presentToast('Ya existe una categoría con este nombre.');
+            } else {
+              // Si no existe, agregar la categoría
+              this.baseDatosService.agregarCategoria({ categoria: nombreEnMayusculas })
+                .then(() => {
+                  this.presentToast('Categoría creada correctamente.');
+                  this.modalCrearCategoria.dismiss(
+                    { nombreNuevaCategoria: nombreValidado },
+                    'confirm'
+                  );
+
+                  // Actualizar la lista de categorías después de agregar una nueva
+                  this.baseDatosService.obtenerCategorias().subscribe(data => {
+                    this.categorias = data;
+                  });
+                })
+                .catch(error => {
+                  console.error('Error al crear categoría', error);
+                  this.presentToast('Error al crear la categoría.');
+                });
+            }
+          })
+          .catch(error => {
+            console.error('Error al validar categoría', error);
+            this.presentToast('Error al validar la categoría.');
+          })
+          .finally(() => {
+            this.nombreNuevaCategoria = "";
+          })
+        break;
+      case 'crearSubCategoria':
+        console.log("Se llamó a la función crear Subcategoria, pasaste los siguientes datos: " + this.categoriaSeleccionada + ' y ' + this.nombreNuevaSubCategoria);
+        // Validaciones
+        if (!this.categoriaSeleccionada.trim()) {
+          this.presentToast('Debe escoger una Categoria');
+          return;
+        } else if (!this.nombreNuevaSubCategoria.trim()) {
+          this.presentToast('El nombre de la nueva Subcategoría no puede estar vacío.');
+          return;
+        }
+        // Verificar si la subcategoría ya existe
+        this.baseDatosService.verificarSubCategoriaExistente(this.categoriaSeleccionada, this.nombreNuevaSubCategoria)
+          .then(existe => {
+            if (existe) {
+              this.presentToast('La subcategoría ya existe en esta categoría.');
+
+            } else {
+              // Si no existe, podemos proceder a agregarla
+              console.log("PASASTE A PODER CREARLA BROu")
+              this.agregarSubCategoria();
+            }
+          })
+          .catch(error => {
+            this.presentToast('Error al verificar la subcategoría: ' + error.message);
+          }).finally(() => {
+            this.nombreNuevaSubCategoria = "";
+          })
+    }
+  }
+
+  // Lógica para agregar la subcategoría
+  agregarSubCategoria() {
+    console.log("Agregando subcategoría...");
+
+    this.baseDatosService.agregarSubCategoria(this.categoriaSeleccionada, this.nombreNuevaSubCategoria)
+      .then(() => {
+        this.presentToast('Subcategoría agregada correctamente.');
+        this.modalCrearSubCategoria.dismiss(null, 'confirm')
+      })
+      .catch(error => {
+        this.presentToast('Error al agregar la subcategoría: ' + error.message);
+      });
+  }
+
+
+
+  // Método para actualizar la categoría
+  actualizarCategoria() {
+    // Validación básica
+    if (!this.nuevoNombre.trim()) {
+      this.presentToast('El nombre de la categoría no puede estar vacío.');
+      return;
+    }
+
+    this.baseDatosService.categoriaYaExiste(this.nuevoNombre)
+      .then(existe => {
+        if (existe) {
+          this.presentToast('Ya existe una categoria con este nombre.');
+        } else {
+          this.baseDatosService.actualizarCategoriaPorNombre(this.nombreCategoria, this.nuevoNombre.trim())
+            .then(() => {
+              console.log('Categoría actualizada con éxito');
+              this.presentToast('Categoría actualizada correctamente');
+
+              // Cerrar el modal
+              this.modalController.dismiss();
+
+              // Actualizar la lista de categorías
+              this.baseDatosService.obtenerCategorias().subscribe(data => {
                 this.categorias = data;
               });
             })
             .catch((error) => {
-              console.error('Error al crear categoría', error);
+              console.error('Error al actualizar la categoría', error);
+              this.presentToast('Hubo un error al actualizar la categoría.');
             });
-          break;
-      case 'crearSubCategoria':
-        this.modalCrearSubCategoria.dismiss(
-          {
-            nombreNuevaSubCategoria: this.nombreNuevaSubCategoria,
-            descripcionNuevaSubCategoria: this.descripcionNuevaSubCategoria,
-          },
-          'confirm'
-        );
-        break;
-    }
+        }
+      })
   }
 
-  // Método para actualizar la categoría
-  actualizarCategoria() {
-    console.log('Nombre de categoría a actualizar:', this.nombreCategoria);
-    console.log('Nuevo nombre de categoría:', this.nuevoNombre);
+  actualizarSubCategoria(categoriaSeleccionada: string, nuevoNombreSubCategoria: string) {
+    console.log("Categoría seleccionada:", categoriaSeleccionada);
+    console.log("Nuevo nombre de la subcategoría:", nuevoNombreSubCategoria);
   
-    if (!this.nombreCategoria || !this.nuevoNombre) {
-      console.error('Nombre de categoría o nuevo nombre no válidos');
+    // Validación básica
+    if (!categoriaSeleccionada.trim() || !nuevoNombreSubCategoria.trim()) {
+      this.presentToast('Debe completar todos los campos.');
       return;
     }
   
-    this.baseDatosService.actualizarCategoriaPorNombre(this.nombreCategoria, this.nuevoNombre)
+    // Llama al método del servicio para actualizar la subcategoría
+    this.baseDatosService.actualizarSubCategoria(
+      this.categoriaSeleccionada,
+      this.nombreSubCategoriaSeleccionada,
+      nuevoNombreSubCategoria.trim()
+    )
       .then(() => {
-        console.log('Categoría actualizada con éxito');
-        this.presentToast('Categoría actualizada correctamente');
-        
+        console.log('Subcategoría actualizada con éxito');
+        this.presentToast('Subcategoría actualizada correctamente.');
+  
         // Cerrar el modal
-        this.modalController.dismiss();  // Esto cerrará el modal
-        
-        // Opcionalmente, puedes mostrar un mensaje de éxito (toast o alert)
+        this.modalController.dismiss();
+  
+        // Actualizar la lista de categorías para reflejar los cambios
+        this.baseDatosService.obtenerCategorias().subscribe(data => {
+          this.categorias = data;
+        });
       })
-      .catch((error) => {
-        console.error('Error al actualizar la categoría', error);
+      .catch(error => {
+        console.error('Error al actualizar la subcategoría:', error);
+        this.presentToast('Hubo un error al actualizar la subcategoría.');
       });
   }
   
-  
+
+
+
+
+
 
   // Eliminar acción con confirmación en el modal específico
   async delete(modalType: string) {
@@ -234,6 +333,7 @@ export class MenuListaComponent implements OnInit {
       }
     }
     this.modalCategoria.dismiss(null, 'eliminar');
+    this.nombreNuevaCategoria = ''; // Limpia el campo
   }
 
   // Mostrar un mensaje emergente (toast) con un mensaje específico
@@ -246,11 +346,34 @@ export class MenuListaComponent implements OnInit {
     await toast.present();
   }
 
-  // Acción para eliminar la subcategoría
+  // Eliminar la subcategoría seleccionada
   eliminarSubCategoria() {
-    console.log('SubCategoría eliminada');
-    this.modalSubCategoria.dismiss(null, 'eliminar');
+    console.log("Eliminando subcategoría...");
+
+    // Asegúrate de que ambas variables tengan valores
+    if (!this.categoriaSeleccionada.trim() || !this.nombreSubCategoriaSeleccionada.trim()) {
+      this.presentToast('Debe seleccionar una categoría y una subcategoría.');
+      return;
+    }
+
+    // Llamamos al servicio para eliminar la subcategoría en Firestore
+    this.baseDatosService.eliminarSubCategoria(this.categoriaSeleccionada, this.nombreSubCategoriaSeleccionada)
+      .then(() => {
+        this.presentToast('Subcategoría eliminada correctamente.');
+        // Después de eliminar, podemos actualizar la lista de subcategorías si es necesario
+        this.baseDatosService.obtenerCategorias().subscribe((data) => {
+          this.categorias = data;
+        });
+
+        // Cerrar el modal después de eliminar
+        this.modalSubCategoria.dismiss(null, 'eliminar');
+      })
+      .catch(error => {
+        this.presentToast('Error al eliminar la subcategoría: ' + error.message);
+      });
   }
+
+
 
   // Manejar el cierre de los modales, mostrando el mensaje adecuado
   onWillDismiss(event: Event, modalType: string) {
@@ -258,20 +381,20 @@ export class MenuListaComponent implements OnInit {
     if (ev.detail.role === 'confirm') {
       const data = ev.detail.data;
       if (modalType === 'producto' && data) {
-        this.message = `Producto guardado: ${data.nombreProducto}, ${data.descripcionProducto}, ${data.valorProducto}`;
+        this.message = `Producto guardado: ${data.nombreProducto}, ${data.valorProducto}`;
       } else if (modalType === 'categoria' && data) {
         this.message = `Categoría guardada: ${data.nombreCategoria}`;
       } else if (modalType === 'subCategoria' && data) {
-        this.message = `SubCategoría guardada: ${data.nombreSubCategoria}, ${data.descripcionSubCategoria}`;
+        this.message = `SubCategoría guardada: ${data.nombreSubCategoria}`;
       } else if (modalType === 'crearProducto' && data) {
-        this.message = `Producto creado: ${data.nombreNuevoProducto}, ${data.descripcionNuevoProducto}, ${data.valorNuevoProducto}`;
+        this.message = `Producto creado: ${data.nombreNuevoProducto}, ${data.valorNuevoProducto}`;
       } else if (modalType === 'crearCategoria' && data) {
         this.message = `Categoría creada: ${data.nombreNuevaCategoria}`;
         this.baseDatosService.obtenerCategorias().subscribe((data) => {
           this.categorias = data;
         });
       } else if (modalType === 'crearSubCategoria' && data) {
-        this.message = `SubCategoría creada: ${data.nombreNuevaSubCategoria}, ${data.descripcionNuevaSubCategoria}`;
+        this.message = `SubCategoría creada: ${data.nombreNuevaSubCategoria}`;
       }
     } else if (ev.detail.role === 'eliminar') {
       this.message = `${modalType === 'producto' ? 'Producto' : modalType === 'categoria' ? 'Categoría' : 'SubCategoría'} eliminado.`;
@@ -280,14 +403,19 @@ export class MenuListaComponent implements OnInit {
 
   // Abre el modal correspondiente según el tipo de elemento (producto, categoría, subcategoría)
 
-openModal(tipo: string, item: any) {
-  if (tipo === 'categoria') {
-    this.nombreCategoria = item.categoria; // Asignar el nombre de la categoría seleccionada    
-    this.modalCategoria.present(); // Muestra el modal de categoría
-  } else if (tipo === 'subCategoria') {
-    this.nombreSubCategoria = item.nombre; // Asigna el nombre de la subcategoría seleccionada
-    this.descripcionSubCategoria = item.descripcion || ''; // Asigna la descripción si existe
-    this.modalSubCategoria.present(); // Muestra el modal de subcategoría
+  openModal(tipo: string, item: any) {
+
+    if (tipo === 'categoria') {
+      this.nombreCategoria = item.categoria; // Asignar el nombre de la categoría seleccionada    
+      this.modalCategoria.present(); // Muestra el modal de categoría
+    } else if (tipo === 'subCategoria') {
+      console.log('Datos recibidos:', item);
+      this.nombreSubCategoria = item.subcategoria;  // Asignar el nombre de la subcategoría seleccionada
+      this.nombreSubCategoriaSeleccionada = item.subcategoria;  // Asignar también al campo específico
+      this.categoriaSeleccionada = item.categoria;        // Asignar la categoría correspondiente
+      this.modalSubCategoria.present();                  // Muestra el modal de subcategoría
+    }
   }
-}
+
+
 }

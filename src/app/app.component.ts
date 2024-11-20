@@ -10,11 +10,16 @@ import { BaseDatosService } from './services/base-datos.service';
 export class AppComponent {
   categorias: any[] = [];  // Propiedad para almacenar los datos de la colección
   nuevaCategoria: string = '';  // Propiedad para la nueva categoría
+  productos: any[] = [];  // Propiedad para almacenar los datos de la colección  
 
   constructor(private firestore: AngularFirestore, private baseDatosService: BaseDatosService) {
     this.firestore.collection('Categoria').valueChanges().subscribe(data => {
       console.log(data);  // Opcional: Muestra los datos en la consola
       this.categorias = data;  // Almacena los datos en la propiedad `categorias`
+    });
+    this.firestore.collection('Productos').valueChanges().subscribe(data => {
+      console.log(data);  // Opcional: Muestra los datos en la consola
+      this.productos = data;  // Almacena los datos en la propiedad `categorias`
     });
   }
   // Método para agregar una nueva categoría
