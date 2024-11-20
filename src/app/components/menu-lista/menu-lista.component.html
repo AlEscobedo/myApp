@@ -162,21 +162,6 @@
     </ion-card-content>
   </ion-card>
   
-  <ion-card *ngFor="let producto of productos">
-    <ion-card-header>
-      <ion-item lines="none">
-        <ion-col class="ion-text-center">
-          <h4> {{ producto.categoria }} </h4>
-          <h4> {{ producto.subcategoria }} </h4>
-          <h4> {{ producto.nombre }} </h4>
-          <p> {{ producto.descripcion }} </p>
-        </ion-col>
-      </ion-item>
-    </ion-card-header>
-  </ion-card>
-
-
-
   <!-- Modal para Detalles Categoria -->
   <ion-modal #modalCategoria (willDismiss)="onWillDismiss($event, 'categoria')">
     <ng-template>
