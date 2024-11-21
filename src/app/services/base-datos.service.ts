@@ -27,6 +27,24 @@ export class BaseDatosService {
     return this.firestore.collection('Categoria').doc(id).set(categoria);  // Agrega la categoría a Firestore
   }
 
+  eliminarProductoPorNombre(nombreProducto: string): Promise<void> {
+    return this.firestore.collection('Productos', ref => ref.where('nombre', '==', nombreProducto))
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (snapshot && !snapshot.empty) {  // Verificación explícita de snapshot
+          const batch = this.firestore.firestore.batch();
+          snapshot.forEach(doc => {
+            batch.delete(doc.ref);
+          });
+          return batch.commit();
+        } else {
+          throw new Error('No se encontró ningun producto con ese nombre');
+        }
+      });
+  }
+
+
   eliminarCategoriaPorNombre(nombreCategoria: string): Promise<void> {
     return this.firestore.collection('Categoria', ref => ref.where('categoria', '==', nombreCategoria))
       .get()
@@ -59,6 +77,29 @@ export class BaseDatosService {
         return false; // Por defecto, considera que no existe.
       });
   }
+
+  // Método para verificar si un producto ya existe
+  productoYaExiste(nombreProducto: string): Promise<boolean> {
+    const nombreLimpio = nombreProducto.trim().toUpperCase(); // Normaliza el nombre.
+    return this.firestore.collection('Productos', ref =>
+      ref.where('nombre', '==', nombreLimpio)
+    )
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (snapshot) {
+          return !snapshot.empty; // Devuelve true si el producto existe.
+        }
+        return false; // Por defecto, considera que no existe.
+      })
+      .catch(error => {
+        console.error('Error al verificar si el producto existe:', error);
+        return false; // En caso de error, devuelve false.
+      });
+  }
+  
+  
+  
   // Método para actualizar el nombre de una categoría
   actualizarCategoriaPorNombre(nombreCategoria: string, nuevoNombre: string): Promise<void> {
     return this.firestore.collection('Categoria', ref => ref.where('categoria', '==', nombreCategoria))
@@ -78,6 +119,29 @@ export class BaseDatosService {
   }
 
   
+// Método para actualizar el nombre de una categoría
+actualizarProductoPorNombre(nombreProducto: string, nuevoNombreProducto: string): Promise<void> {
+  const nombreLimpio = nombreProducto.trim(); // Elimina espacios adicionales.
+  const nuevoNombreLimpio = nuevoNombreProducto.trim(); // Elimina espacios adicionales.
+
+  return this.firestore.collection('Productos', ref => ref.where('nombre', '==', nombreLimpio))
+    .get()
+    .toPromise()
+    .then(snapshot => {
+      if (!snapshot || snapshot.empty) {
+        throw new Error(`No se encontró ningún producto con el nombre: ${nombreLimpio}`);
+      }
+      // Obtiene el ID del documento encontrado
+      const docRef = snapshot.docs[0].ref;
+      return docRef.update({ nombre: nuevoNombreLimpio }); // Actualiza el campo 'nombre'.
+    })
+    .catch((error) => {
+      console.error('Error al actualizar el producto:', error.message);
+      throw new Error('Error al actualizar el producto: ' + error.message);
+    });
+}
+
+
 
 
   // Método para verificar si una subcategoría existe en una categoría específica

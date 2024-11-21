@@ -23,6 +23,8 @@ export class MenuListaComponent implements OnInit {
   nombreCategoria = '';
   nombreSubCategoria: string = '';
 
+  nombreProducto = '';
+
   // Variables para creación de producto, categoría y subcategoría
   nombreNuevaCategoria = '';
   nombreNuevaSubCategoria: string = '';
@@ -31,6 +33,7 @@ export class MenuListaComponent implements OnInit {
 
   idCategoria: string = '';  // ID de la categoría a actualizar
   nuevoNombre: string = '';  // Nuevo nombre para la categoría
+  nuevoNombreProducto: string = '';
 
   // Lista de categorías para mostrar en el componente
   categorias: any[] = [];
@@ -59,6 +62,7 @@ export class MenuListaComponent implements OnInit {
   cancel(modalType: string) {
     switch (modalType) {
       case 'producto':
+        this.nuevoNombreProducto = '';
         this.modalProducto.dismiss(null, 'cancel');
         break;
       case 'categoria':
@@ -71,6 +75,7 @@ export class MenuListaComponent implements OnInit {
         break;
       case 'crearProducto':
         this.modalCrearProducto.dismiss(null, 'cancel');
+        this.nuevoNombreProducto = '';
         break;
       case 'crearCategoria':
         this.modalCrearCategoria.dismiss(null, 'cancel');
@@ -88,7 +93,7 @@ export class MenuListaComponent implements OnInit {
       case 'producto':
         this.modalProducto.dismiss(
           {
-            // agregar codigo
+            nombreProducto: this.nombreProducto,
           },
           'confirm'
         );
@@ -205,6 +210,51 @@ export class MenuListaComponent implements OnInit {
       });
   }
 
+  actualizarProducto() {
+    if (!this.nuevoNombreProducto || !this.nuevoNombreProducto.trim()) {
+      this.presentToast('El nombre del producto no puede estar vacío.');
+      return;
+    }
+
+    const nuevoNombreLimpio = this.nuevoNombreProducto.trim();
+    const nombreActualLimpio = this.nombreProducto.trim();
+
+
+    const nuevoNombreLimpioMAYUS = this.nuevoNombreProducto.trim().toUpperCase();
+    const nombreActualLimpioMAYUS = this.nombreProducto.trim().toUpperCase();
+
+    // Verifica si el nombre nuevo es igual al actual
+    if (nuevoNombreLimpio === nombreActualLimpio || nuevoNombreLimpioMAYUS === nombreActualLimpioMAYUS) {
+      this.presentToast('El nombre del producto es el mismo.');
+      return;
+    }
+
+    // Verifica si ya existe un producto con el nuevo nombre
+    this.baseDatosService.productoYaExiste(nuevoNombreLimpio)
+      .then(existe => {
+        if (existe) {
+          this.presentToast('Ya existe un producto con este nombre.');
+          return;
+        }
+
+        // Actualiza el producto en la base de datos
+        return this.baseDatosService.actualizarProductoPorNombre(nombreActualLimpio, nuevoNombreLimpio)
+          .then(() => {
+            this.presentToast('Producto actualizado correctamente.');
+            this.modalController.dismiss(); // Cierra el modal
+          });
+      })
+      .catch((error) => {
+        console.error('Error al actualizar el producto:', error.message);
+        this.presentToast('Error al actualizar el producto.');
+      })
+      .finally(() => {
+        this.nuevoNombreProducto = ""; // Limpiar el input
+      });
+  }
+
+
+
 
 
   // Método para actualizar la categoría
@@ -317,7 +367,15 @@ export class MenuListaComponent implements OnInit {
 
   // Acción para eliminar el producto
   eliminarProducto() {
-    console.log('Producto eliminado');
+    if (this.nombreProducto) {
+      try {
+        this.baseDatosService.eliminarProductoPorNombre(this.nombreProducto);
+        this.presentToast('Producto eliminado correctamente');
+      } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        this.presentToast('Error al eliminar el producto');
+      }
+    }
     this.modalProducto.dismiss(null, 'eliminar');
   }
 
@@ -414,6 +472,10 @@ export class MenuListaComponent implements OnInit {
       this.nombreSubCategoriaSeleccionada = item.subcategoria;  // Asignar también al campo específico
       this.categoriaSeleccionada = item.categoria;        // Asignar la categoría correspondiente
       this.modalSubCategoria.present();                  // Muestra el modal de subcategoría
+    } else if (tipo === 'producto') {
+      console.log(item.nombre)
+      this.nombreProducto = item.nombre;
+      this.modalProducto.present();
     }
   }
 

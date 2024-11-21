@@ -124,7 +124,7 @@
               <ion-icon name="create-outline"></ion-icon>
             </ion-button>
           </ion-item>
-  
+
           <!-- Contenido de las subcategorías -->
           <div slot="content">
             <ion-accordion-group>
@@ -137,7 +137,7 @@
                     <ion-icon name="create-outline"></ion-icon>
                   </ion-button>
                 </ion-item>
-  
+
                 <!-- Contenido de los productos de esta subcategoría -->
                 <div slot="content">
                   <!-- Filtrar productos que coinciden con la subcategoría -->
@@ -146,9 +146,12 @@
                       <ion-label>
                         <h4>{{ producto.nombre }}</h4>
                       </ion-label>
+                      <ion-button (click)="openModal('producto', producto)" fill="clear" size="large" color="primary" slot="end">
+                        <ion-icon name="create-outline"></ion-icon>
+                      </ion-button>
                     </ion-item>
                   </ion-list>
-  
+
                   <!-- Mensaje si no hay productos en esta subcategoría -->
                   <div *ngIf="getProductosPorSubcategoria(subcategoria).length === 0">
                     <p>No hay productos disponibles en esta subcategoría.</p>
@@ -161,7 +164,7 @@
       </ion-accordion-group>
     </ion-card-content>
   </ion-card>
-  
+
   <!-- Modal para Detalles Categoria -->
   <ion-modal #modalCategoria (willDismiss)="onWillDismiss($event, 'categoria')">
     <ng-template>
@@ -230,5 +233,37 @@
     </ng-template>
   </ion-modal>
 
+  <!-- Modal para Detalles Producto -->
+  <ion-modal #modalProducto (willDismiss)="onWillDismiss($event, 'producto')">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel('producto')">Salir</ion-button>
+          </ion-buttons>
+          <ion-title>Detalles del Producto</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="actualizarProducto()"
+              [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+
+        <!-- Campo para editar el producto -->
+        <ion-item>
+          <ion-input label="Nuevo Nombre" labelPlacement="stacked" [(ngModel)]="nuevoNombreProducto"
+            placeholder="{{nombreProducto}}" required></ion-input>
+        </ion-item>
+
+        <!-- Botón para eliminar -->
+        <div class="ion-margin-top">
+          <ion-button (click)="delete('producto')" expand="block" color="danger">
+            Eliminar Producto
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
