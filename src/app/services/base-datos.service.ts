@@ -78,28 +78,21 @@ export class BaseDatosService {
       });
   }
 
-  // Método para verificar si un producto ya existe
-  productoYaExiste(nombreProducto: string): Promise<boolean> {
-    const nombreLimpio = nombreProducto.trim().toUpperCase(); // Normaliza el nombre.
-    return this.firestore.collection('Productos', ref =>
-      ref.where('nombre', '==', nombreLimpio)
-    )
-      .get()
-      .toPromise()
-      .then(snapshot => {
-        if (snapshot) {
-          return !snapshot.empty; // Devuelve true si el producto existe.
-        }
-        return false; // Por defecto, considera que no existe.
-      })
-      .catch(error => {
-        console.error('Error al verificar si el producto existe:', error);
-        return false; // En caso de error, devuelve false.
-      });
+  // Modificar la función productoYaExiste para aceptar el array de productos
+  productoYaExiste(nombreProducto: string, productos: any[]): boolean {
+    const nombreLimpio = nombreProducto.trim().toUpperCase(); // Normaliza el nombre recibido.
+
+    // Compara si ya existe en el array de productos.
+    return productos.some(producto => {
+      const nombre = (producto.nombre || '').trim().toUpperCase(); // Normaliza el nombre de cada producto.
+      return nombre === nombreLimpio; // Compara los nombres normalizados.
+    });
   }
-  
-  
-  
+
+
+
+
+
   // Método para actualizar el nombre de una categoría
   actualizarCategoriaPorNombre(nombreCategoria: string, nuevoNombre: string): Promise<void> {
     return this.firestore.collection('Categoria', ref => ref.where('categoria', '==', nombreCategoria))
@@ -118,28 +111,28 @@ export class BaseDatosService {
       });
   }
 
-  
-// Método para actualizar el nombre de una categoría
-actualizarProductoPorNombre(nombreProducto: string, nuevoNombreProducto: string): Promise<void> {
-  const nombreLimpio = nombreProducto.trim(); // Elimina espacios adicionales.
-  const nuevoNombreLimpio = nuevoNombreProducto.trim(); // Elimina espacios adicionales.
 
-  return this.firestore.collection('Productos', ref => ref.where('nombre', '==', nombreLimpio))
-    .get()
-    .toPromise()
-    .then(snapshot => {
-      if (!snapshot || snapshot.empty) {
-        throw new Error(`No se encontró ningún producto con el nombre: ${nombreLimpio}`);
-      }
-      // Obtiene el ID del documento encontrado
-      const docRef = snapshot.docs[0].ref;
-      return docRef.update({ nombre: nuevoNombreLimpio }); // Actualiza el campo 'nombre'.
-    })
-    .catch((error) => {
-      console.error('Error al actualizar el producto:', error.message);
-      throw new Error('Error al actualizar el producto: ' + error.message);
-    });
-}
+  // Método para actualizar el nombre de una categoría
+  actualizarProductoPorNombre(nombreProducto: string, nuevoNombreProducto: string): Promise<void> {
+    const nombreLimpio = nombreProducto.trim(); // Elimina espacios adicionales.
+    const nuevoNombreLimpio = nuevoNombreProducto.trim(); // Elimina espacios adicionales.
+
+    return this.firestore.collection('Productos', ref => ref.where('nombre', '==', nombreLimpio))
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (!snapshot || snapshot.empty) {
+          throw new Error(`No se encontró ningún producto con el nombre: ${nombreLimpio}`);
+        }
+        // Obtiene el ID del documento encontrado
+        const docRef = snapshot.docs[0].ref;
+        return docRef.update({ nombre: nuevoNombreLimpio }); // Actualiza el campo 'nombre'.
+      })
+      .catch((error) => {
+        console.error('Error al actualizar el producto:', error.message);
+        throw new Error('Error al actualizar el producto: ' + error.message);
+      });
+  }
 
 
 
@@ -238,46 +231,46 @@ actualizarProductoPorNombre(nombreProducto: string, nuevoNombreProducto: string)
   }
 
 
-// Método para actualizar el nombre de una subcategoría
-actualizarSubCategoria(nombreCategoria: string, subCategoriaActual: string, nuevoNombreSubCategoria: string): Promise<void> {
-  const nombreCategoriaMayusculas = nombreCategoria.toUpperCase(); // Insensibilidad a mayúsculas
-  const subCategoriaActualMayusculas = subCategoriaActual.toUpperCase();
-  const nuevoNombreSubCategoriaMayusculas = nuevoNombreSubCategoria.toUpperCase();
+  // Método para actualizar el nombre de una subcategoría
+  actualizarSubCategoria(nombreCategoria: string, subCategoriaActual: string, nuevoNombreSubCategoria: string): Promise<void> {
+    const nombreCategoriaMayusculas = nombreCategoria.toUpperCase(); // Insensibilidad a mayúsculas
+    const subCategoriaActualMayusculas = subCategoriaActual.toUpperCase();
+    const nuevoNombreSubCategoriaMayusculas = nuevoNombreSubCategoria.toUpperCase();
 
-  return this.firestore.collection('Categoria', ref =>
-    ref.where('categoria', '==', nombreCategoriaMayusculas)
-  )
-    .get()
-    .toPromise()
-    .then(snapshot => {
-      if (snapshot && !snapshot.empty) { // Verificar que snapshot tiene datos
-        const categoriaDoc = snapshot.docs[0]; // Obtener el primer documento de la categoría
-        const categoria = categoriaDoc.data() as any; // Obtener los datos de la categoría
-        const subcategorias: string[] = categoria['subcategorias'] || []; // Asegurarse de que subcategorias es un arreglo
+    return this.firestore.collection('Categoria', ref =>
+      ref.where('categoria', '==', nombreCategoriaMayusculas)
+    )
+      .get()
+      .toPromise()
+      .then(snapshot => {
+        if (snapshot && !snapshot.empty) { // Verificar que snapshot tiene datos
+          const categoriaDoc = snapshot.docs[0]; // Obtener el primer documento de la categoría
+          const categoria = categoriaDoc.data() as any; // Obtener los datos de la categoría
+          const subcategorias: string[] = categoria['subcategorias'] || []; // Asegurarse de que subcategorias es un arreglo
 
-        // Encontrar el índice de la subcategoría actual
-        const index = subcategorias.findIndex(subcategoria => subcategoria.toUpperCase() === subCategoriaActualMayusculas);
-        if (index === -1) {
-          throw new Error('La subcategoría no existe en esta categoría.');
+          // Encontrar el índice de la subcategoría actual
+          const index = subcategorias.findIndex(subcategoria => subcategoria.toUpperCase() === subCategoriaActualMayusculas);
+          if (index === -1) {
+            throw new Error('La subcategoría no existe en esta categoría.');
+          }
+
+          // Verificar si el nuevo nombre ya existe
+          if (subcategorias.some(subcategoria => subcategoria.toUpperCase() === nuevoNombreSubCategoriaMayusculas)) {
+            throw new Error('Ya existe una subcategoría con el nuevo nombre.');
+          }
+
+          // Actualizar el nombre de la subcategoría
+          subcategorias[index] = nuevoNombreSubCategoria;
+
+          // Guardar los cambios en Firestore
+          return categoriaDoc.ref.update({ subcategorias });
+        } else {
+          throw new Error('No se encontró la categoría con ese nombre.');
         }
-
-        // Verificar si el nuevo nombre ya existe
-        if (subcategorias.some(subcategoria => subcategoria.toUpperCase() === nuevoNombreSubCategoriaMayusculas)) {
-          throw new Error('Ya existe una subcategoría con el nuevo nombre.');
-        }
-
-        // Actualizar el nombre de la subcategoría
-        subcategorias[index] = nuevoNombreSubCategoria;
-
-        // Guardar los cambios en Firestore
-        return categoriaDoc.ref.update({ subcategorias });
-      } else {
-        throw new Error('No se encontró la categoría con ese nombre.');
-      }
-    })
-    .catch(error => {
-      throw new Error('Error al actualizar la subcategoría: ' + error.message);
-    });
-}
+      })
+      .catch(error => {
+        throw new Error('Error al actualizar la subcategoría: ' + error.message);
+      });
+  }
 
 }

@@ -215,34 +215,32 @@ export class MenuListaComponent implements OnInit {
       this.presentToast('El nombre del producto no puede estar vacío.');
       return;
     }
-
+  
     const nuevoNombreLimpio = this.nuevoNombreProducto.trim();
     const nombreActualLimpio = this.nombreProducto.trim();
-
-
+  
     const nuevoNombreLimpioMAYUS = this.nuevoNombreProducto.trim().toUpperCase();
     const nombreActualLimpioMAYUS = this.nombreProducto.trim().toUpperCase();
-
+  
     // Verifica si el nombre nuevo es igual al actual
     if (nuevoNombreLimpio === nombreActualLimpio || nuevoNombreLimpioMAYUS === nombreActualLimpioMAYUS) {
       this.presentToast('El nombre del producto es el mismo.');
       return;
     }
-
+  
     // Verifica si ya existe un producto con el nuevo nombre
-    this.baseDatosService.productoYaExiste(nuevoNombreLimpio)
-      .then(existe => {
-        if (existe) {
-          this.presentToast('Ya existe un producto con este nombre.');
-          return;
-        }
-
-        // Actualiza el producto en la base de datos
-        return this.baseDatosService.actualizarProductoPorNombre(nombreActualLimpio, nuevoNombreLimpio)
-          .then(() => {
-            this.presentToast('Producto actualizado correctamente.');
-            this.modalController.dismiss(); // Cierra el modal
-          });
+    const existe = this.baseDatosService.productoYaExiste(nuevoNombreLimpio, this.productos);
+  
+    if (existe) {
+      this.presentToast('Ya existe un producto con este nombre.');
+      return;
+    }
+  
+    // Actualiza el producto en la base de datos
+    this.baseDatosService.actualizarProductoPorNombre(nombreActualLimpio, nuevoNombreLimpio)
+      .then(() => {
+        this.presentToast('Producto actualizado correctamente.');
+        this.modalController.dismiss(); // Cierra el modal
       })
       .catch((error) => {
         console.error('Error al actualizar el producto:', error.message);
@@ -252,6 +250,7 @@ export class MenuListaComponent implements OnInit {
         this.nuevoNombreProducto = ""; // Limpiar el input
       });
   }
+  
 
 
 
@@ -479,14 +478,15 @@ export class MenuListaComponent implements OnInit {
     }
   }
 
-  // Agregamos un nuevo método en el componente para filtrar productos según la subcategoría
   getProductosPorSubcategoria(subcategoria: string) {
-    // Filtramos los productos comparando las categorías en minúsculas
+    console.log('Productos:', this.productos); // Verificar los productos
     return this.productos.filter(producto => {
-      const categoriaProducto = producto.categoria.toLowerCase(); // Asegúrate de que la categoría esté en minúsculas
-      return categoriaProducto === subcategoria.toLowerCase(); // Compara con la subcategoría en minúsculas
+      console.log('Producto:', producto); // Verificar cada producto
+      const categoriaProducto = producto.categoria ? producto.categoria.toString().toLowerCase() : '';
+      return categoriaProducto === subcategoria.toLowerCase();
     });
   }
+  
 
 
 
