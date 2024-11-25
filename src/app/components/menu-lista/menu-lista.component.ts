@@ -54,6 +54,15 @@ export class MenuListaComponent implements OnInit {
   catSeleccionada: any;
   subcategoriaSeleccionada: any;  
 
+  crearImagen = this.nuevaImagen;
+  crearNombreProducto: any;
+  crearDescripcionProducto: any;
+  crearPrecioPequenoProducto: any;
+  crearPrecioGrandeProducto: any;
+  crearEstadoProducto: any;
+  crearCategoria: any;
+
+
 
   subcategoriaOriginal: string | null = null;
 
@@ -96,7 +105,8 @@ export class MenuListaComponent implements OnInit {
         this.nuevaDescripcionProducto = '';
         this.nuevoPrecioPequenoProducto = null;
         this.nuevoPrecioGrandeProducto = null;
-
+        this.catSeleccionada = null;
+        this.subcategoriaSeleccionada = null;        
         this.nuevaImagenPreview = null;
         this.modalProducto.dismiss(null, 'cancel');
         break;
@@ -110,6 +120,13 @@ export class MenuListaComponent implements OnInit {
         break;
       case 'crearProducto':
         this.modalCrearProducto.dismiss(null, 'cancel');
+        this.crearNombreProducto = null;
+        this.crearDescripcionProducto = null;
+        this.crearPrecioPequenoProducto = null;
+        this.crearPrecioGrandeProducto = null;
+        this.crearEstadoProducto = null;
+        this.crearCategoria = null;
+        this.catSeleccionada = null;
 
         break;
       case 'crearCategoria':
@@ -330,6 +347,7 @@ export class MenuListaComponent implements OnInit {
       this.nuevoPrecioPequenoProducto = null;
       this.nuevoPrecioGrandeProducto = null;
       this.nuevoEstadoProducto = null;
+      this.catSeleccionada = null;
       this.subcategoriaSeleccionada = null; // Restablecer la subcategoría
       this.modalController.dismiss(); // Cierra el modal
     } catch (error: any) {

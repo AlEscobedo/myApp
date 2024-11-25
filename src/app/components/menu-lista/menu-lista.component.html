@@ -43,14 +43,72 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
+        
+        <!-- Campo para editar el nombre del producto -->
         <ion-item>
-          <ion-input label="Nombre del Producto" labelPlacement="stacked" type="text"
-            placeholder="Nombre del producto"></ion-input>
+          <ion-input label="Nombre Producto" labelPlacement="stacked" [(ngModel)]="crearNombreProducto"
+            placeholder="Escriba el nombre aqui" required>
+          </ion-input>
         </ion-item>
+
+        <!-- Campo para cambiar la imagen -->
         <ion-item>
-          <ion-input label="Valor del Producto" labelPlacement="stacked" type="number"
-            placeholder="$12.000"></ion-input>
+          <ion-label class="ion-text-wrap" position="stacked">Nueva Imagen</ion-label>
+          <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+          <img *ngIf="nuevaImagenPreview" [src]="nuevaImagenPreview" alt="Vista previa" class="preview-image" />
         </ion-item>
+
+
+        <!-- Campo para editar la descripcion del producto -->
+        <ion-item>
+          <ion-textarea label="Descripcion Producto" labelPlacement="stacked" [(ngModel)]="crearDescripcionProducto"
+            placeholder="Ingrese la descripción del producto" required auto-grow="true">
+          </ion-textarea>
+        </ion-item>
+
+        <!-- Campo para editar el precio pequeno del producto -->
+        <ion-item>
+          <ion-input type="number" min="0" label="Precio Minimo" labelPlacement="stacked"
+            [(ngModel)]="crearPrecioPequenoProducto" placeholder="$000.000" required>
+          </ion-input>
+        </ion-item>
+
+        <!-- Campo para editar el precio grande del producto -->
+        <ion-item>
+          <ion-input type="number" min="0" label="Nuevo Precio Maximo" labelPlacement="stacked"
+            [(ngModel)]="crearPrecioGrandeProducto" placeholder="$000.000" required>
+          </ion-input>
+        </ion-item>
+
+        <!-- Disponibilidad del producto -->
+        <ion-item>
+          <ion-label>Estado</ion-label>
+          <ion-select [(ngModel)]="crearEstadoProducto"
+            placeholder="{{estadoProducto ? 'Disponible' : 'No disponible'}}">
+            <ion-select-option [value]="true">Disponible</ion-select-option>
+            <ion-select-option [value]="false">No disponible</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+
+        <ion-item>
+          <ion-label>Mover de Categoría</ion-label>
+          <ion-select placeholder="Escoger Categoria" [(ngModel)]="catSeleccionada" (ionChange)="cargarSubcategorias()">
+            <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">{{categoria.categoria}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-item *ngIf="subcategorias.length > 0">
+          <ion-label>Escoger subcategoría</ion-label>
+          <ion-select placeholder="Subcategorias" [(ngModel)]="crearCategoria">
+            <ion-select-option *ngFor="let subcategoria of subcategorias" [value]="subcategoria">{{subcategoria}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+
+
+
+
       </ion-content>
     </ng-template>
   </ion-modal>
@@ -246,7 +304,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('producto')">Salir</ion-button>
           </ion-buttons>
-          <ion-title>Detalles del Producto</ion-title>
+          <ion-title class="centered-title">Detalles del Producto</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="actualizarProducto()" [strong]="true">Guardar</ion-button>
           </ion-buttons>
