@@ -30,6 +30,9 @@ export class MenuListaComponent implements OnInit {
   descripcionProducto = '';
   precioPequenoProducto: number | null = null;
   precioGrandeProducto: number | null = null;
+  estadoProducto: boolean | null = null;
+  nuevoEstadoProducto: boolean | null = null; // Inicialmente null
+
 
   nuevaImagen: File | null = null; // Archivo seleccionado
   nuevaImagenPreview: string | null = null; // Vista previa de la imagen
@@ -76,7 +79,7 @@ export class MenuListaComponent implements OnInit {
       case 'producto':
         this.nuevoNombreProducto = '';
         this.nuevaImagen = null;
-        this.nuevaDescripcionProducto = '';
+        this.nuevaDescripcionProducto = '';        
         this.nuevoPrecioPequenoProducto = null;
         this.nuevoPrecioGrandeProducto = null;
 
@@ -232,7 +235,8 @@ export class MenuListaComponent implements OnInit {
       !this.nuevaImagen &&
       (!this.nuevaDescripcionProducto || !this.nuevaDescripcionProducto.trim()) &&
       (this.nuevoPrecioPequenoProducto === null || this.nuevoPrecioPequenoProducto === this.precioPequenoProducto) &&
-      (this.nuevoPrecioGrandeProducto === null || this.nuevoPrecioGrandeProducto === this.precioGrandeProducto)
+      (this.nuevoPrecioGrandeProducto === null || this.nuevoPrecioGrandeProducto === this.precioGrandeProducto) &&
+      (this.nuevoEstadoProducto === null || this.nuevoEstadoProducto === this.estadoProducto)
     ) {
       this.presentToast('Tienes que hacer al menos un cambio para guardar.');
       return;
@@ -283,6 +287,10 @@ export class MenuListaComponent implements OnInit {
       actualizaciones.precioGrande = this.nuevoPrecioGrandeProducto;
     }
 
+    if (this.nuevoEstadoProducto !== null && this.nuevoEstadoProducto !== this.estadoProducto) {
+      actualizaciones.disponible = this.nuevoEstadoProducto; // Actualiza el estado si es diferente
+  }
+
     if (urlImagen) {
       actualizaciones.imagen = urlImagen; // Actualiza la imagen si se ha subido una nueva imagen
     }
@@ -297,6 +305,7 @@ export class MenuListaComponent implements OnInit {
       this.nuevaImagen = null;
       this.nuevoPrecioPequenoProducto = null;
       this.nuevoPrecioGrandeProducto = null;
+      this.nuevoEstadoProducto = null; // Inicialmente null
       this.modalController.dismiss(); // Cierra el modal
     } catch (error: any) {
       console.error('Error al actualizar el producto:', error.message);
@@ -547,6 +556,7 @@ export class MenuListaComponent implements OnInit {
       this.descripcionProducto = item.descripcion;
       this.precioPequenoProducto = item.precioPequeno;
       this.precioGrandeProducto = item.precioGrande;
+      this.estadoProducto = item.disponible;
       this.modalProducto.present();
     }
   }

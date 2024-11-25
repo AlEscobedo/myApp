@@ -290,6 +290,20 @@
           </ion-input>
         </ion-item>
 
+        <!-- Disponibilidad del producto -->
+        <ion-item>
+          <ion-label>Estado</ion-label>
+          <ion-select [(ngModel)]="nuevoEstadoProducto"
+            placeholder="{{estadoProducto ? 'Disponible' : 'No disponible'}}">
+            <ion-select-option [value]="true">Disponible</ion-select-option>
+            <ion-select-option [value]="false">No disponible</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+
+
+
+
         <!-- Botón para eliminar -->
         <div class="ion-margin-top">
           <ion-button (click)="delete('producto')" expand="block" color="danger">
