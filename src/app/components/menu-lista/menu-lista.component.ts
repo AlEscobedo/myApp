@@ -27,6 +27,7 @@ export class MenuListaComponent implements OnInit {
   imagenActual: string = '';
 
   nombreProducto = '';
+  descripcionProducto = '';
   nuevaImagen: File | null = null; // Archivo seleccionado
   nuevaImagenPreview: string | null = null; // Vista previa de la imagen
 
@@ -39,6 +40,7 @@ export class MenuListaComponent implements OnInit {
   idCategoria: string = '';  // ID de la categoría a actualizar
   nuevoNombre: string = '';  // Nuevo nombre para la categoría
   nuevoNombreProducto: string = '';
+  nuevaDescripcionProducto: string = '';
 
   // Lista de categorías para mostrar en el componente
   categorias: any[] = [];
@@ -69,6 +71,7 @@ export class MenuListaComponent implements OnInit {
       case 'producto':
         this.nuevoNombreProducto = '';
         this.nuevaImagen = null;
+        this.nuevaDescripcionProducto = '';
         this.nuevaImagenPreview = null;
         this.modalProducto.dismiss(null, 'cancel');
         break;
@@ -100,7 +103,7 @@ export class MenuListaComponent implements OnInit {
       case 'producto':
         this.modalProducto.dismiss(
           {
-            nombreProducto: this.nombreProducto,
+            nombreProducto: this.nombreProducto,            
           },
           'confirm'
         );
@@ -218,7 +221,8 @@ export class MenuListaComponent implements OnInit {
   async actualizarProducto() {
     if (
       (!this.nuevoNombreProducto || !this.nuevoNombreProducto.trim()) &&
-      !this.nuevaImagen
+      !this.nuevaImagen &&
+      (!this.nuevaDescripcionProducto || !this.nuevaDescripcionProducto.trim())
     ) {
       this.presentToast('No puedes editar campos vacíos.');
       return;
@@ -253,6 +257,10 @@ export class MenuListaComponent implements OnInit {
     const actualizaciones: any = {};
     if (nuevoNombreLimpio && nuevoNombreLimpio !== nombreActualLimpio) {
       actualizaciones.nombre = nuevoNombreLimpio; // Actualiza el nombre si es diferente
+    }
+    
+    if (this.nuevaDescripcionProducto && this.nuevaDescripcionProducto !== this.descripcionProducto) {
+      actualizaciones.descripcion = this.nuevaDescripcionProducto.trim(); // Actualiza la descripción si es diferente
     }
   
     if (urlImagen) {
@@ -509,6 +517,7 @@ export class MenuListaComponent implements OnInit {
       this.modalSubCategoria.present();                  // Muestra el modal de subcategoría
     } else if (tipo === 'producto') {      
       this.nombreProducto = item.nombre;
+      this.descripcionProducto = item.descripcion
       this.modalProducto.present();
     }
   }

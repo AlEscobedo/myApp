@@ -274,14 +274,16 @@
 
       <!-- Campo para editar la descripcion del producto -->
       <ion-item>
-        <ion-input 
-          label="Nuevo Nombre" 
+        <ion-textarea 
+          label="Nueva Descripcion" 
           labelPlacement="stacked" 
-          [(ngModel)]="nuevoNombreProducto"
-          placeholder="{{nombreProducto}}" 
-          required>
-        </ion-input>
+          [(ngModel)]="nuevaDescripcionProducto"
+          placeholder="{{descripcionProducto}}" 
+          required 
+          auto-grow="true">
+        </ion-textarea>
       </ion-item>
+      
 
 
       <!-- Botón para eliminar -->
