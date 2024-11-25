@@ -28,6 +28,9 @@ export class MenuListaComponent implements OnInit {
 
   nombreProducto = '';
   descripcionProducto = '';
+  precioPequenoProducto: number | null = null;
+  precioGrandeProducto: number | null = null;
+
   nuevaImagen: File | null = null; // Archivo seleccionado
   nuevaImagenPreview: string | null = null; // Vista previa de la imagen
 
@@ -41,6 +44,8 @@ export class MenuListaComponent implements OnInit {
   nuevoNombre: string = '';  // Nuevo nombre para la categoría
   nuevoNombreProducto: string = '';
   nuevaDescripcionProducto: string = '';
+  nuevoPrecioPequenoProducto: number | null = null;
+  nuevoPrecioGrandeProducto: number | null = null;
 
   // Lista de categorías para mostrar en el componente
   categorias: any[] = [];
@@ -72,6 +77,9 @@ export class MenuListaComponent implements OnInit {
         this.nuevoNombreProducto = '';
         this.nuevaImagen = null;
         this.nuevaDescripcionProducto = '';
+        this.nuevoPrecioPequenoProducto = null;
+        this.nuevoPrecioGrandeProducto = null;
+
         this.nuevaImagenPreview = null;
         this.modalProducto.dismiss(null, 'cancel');
         break;
@@ -85,7 +93,7 @@ export class MenuListaComponent implements OnInit {
         break;
       case 'crearProducto':
         this.modalCrearProducto.dismiss(null, 'cancel');
-        this.nuevoNombreProducto = '';
+
         break;
       case 'crearCategoria':
         this.modalCrearCategoria.dismiss(null, 'cancel');
@@ -103,7 +111,7 @@ export class MenuListaComponent implements OnInit {
       case 'producto':
         this.modalProducto.dismiss(
           {
-            nombreProducto: this.nombreProducto,            
+            nombreProducto: this.nombreProducto,
           },
           'confirm'
         );
@@ -176,7 +184,7 @@ export class MenuListaComponent implements OnInit {
             this.nombreNuevaCategoria = "";
           })
         break;
-      case 'crearSubCategoria':        
+      case 'crearSubCategoria':
         // Validaciones
         if (!this.categoriaSeleccionada.trim()) {
           this.presentToast('Debe escoger una Categoria');
@@ -222,81 +230,100 @@ export class MenuListaComponent implements OnInit {
     if (
       (!this.nuevoNombreProducto || !this.nuevoNombreProducto.trim()) &&
       !this.nuevaImagen &&
-      (!this.nuevaDescripcionProducto || !this.nuevaDescripcionProducto.trim())
+      (!this.nuevaDescripcionProducto || !this.nuevaDescripcionProducto.trim()) &&
+      (this.nuevoPrecioPequenoProducto === null || this.nuevoPrecioPequenoProducto === this.precioPequenoProducto) &&
+      (this.nuevoPrecioGrandeProducto === null || this.nuevoPrecioGrandeProducto === this.precioGrandeProducto)
     ) {
-      this.presentToast('No puedes editar campos vacíos.');
+      this.presentToast('Tienes que hacer al menos un cambio para guardar.');
       return;
     }
-  
+
     const nuevoNombreLimpio = this.nuevoNombreProducto?.trim();
     const nombreActualLimpio = this.nombreProducto?.trim();
-  
+
     const nuevoNombreLimpioMAYUS = this.nuevoNombreProducto?.trim().toUpperCase();
     const nombreActualLimpioMAYUS = this.nombreProducto?.trim().toUpperCase();
-  
+
     // Verifica si el nombre nuevo es igual al actual
     if (nuevoNombreLimpio === nombreActualLimpio || nuevoNombreLimpioMAYUS === nombreActualLimpioMAYUS) {
       this.presentToast('El nombre del producto es el mismo.');
       return;
     }
-  
+
     // Verifica si ya existe un producto con el nuevo nombre
     const existe = this.baseDatosService.productoYaExiste(nuevoNombreLimpio, this.productos);
     if (existe) {
       this.presentToast('Ya existe un producto con este nombre.');
       return;
     }
-  
+
     // Si se ha actualizado la imagen, sube la imagen y obtiene la URL
     let urlImagen = this.imagenActual; // Mantén la imagen actual si no se selecciona una nueva imagen
     if (this.nuevaImagen) {
       urlImagen = await this.baseDatosService.subirImagen(this.nuevaImagen); // Sube la imagen y obtiene la URL
     }
-  
+
     // Actualiza el producto en la base de datos
     const actualizaciones: any = {};
     if (nuevoNombreLimpio && nuevoNombreLimpio !== nombreActualLimpio) {
       actualizaciones.nombre = nuevoNombreLimpio; // Actualiza el nombre si es diferente
     }
-    
+
     if (this.nuevaDescripcionProducto && this.nuevaDescripcionProducto !== this.descripcionProducto) {
       actualizaciones.descripcion = this.nuevaDescripcionProducto.trim(); // Actualiza la descripción si es diferente
     }
-  
+
+    // Verifica y actualiza el precio pequeño si es válido
+    if (typeof this.nuevoPrecioPequenoProducto === 'number' && this.nuevoPrecioPequenoProducto !== this.precioPequenoProducto) {
+      actualizaciones.precioPequeno = this.nuevoPrecioPequenoProducto;
+    }
+
+    // Verifica y actualiza el precio grande si es válido
+    if (typeof this.nuevoPrecioGrandeProducto === 'number' && this.nuevoPrecioGrandeProducto !== this.precioGrandeProducto) {
+      actualizaciones.precioGrande = this.nuevoPrecioGrandeProducto;
+    }
+
     if (urlImagen) {
       actualizaciones.imagen = urlImagen; // Actualiza la imagen si se ha subido una nueva imagen
     }
-  
+
     try {
       await this.baseDatosService.actualizarProductoPorNombre(nombreActualLimpio, actualizaciones);
       this.presentToast('Producto actualizado correctamente.');
+
+      // Restablecer los campos
+      this.nuevoNombreProducto = '';
+      this.nuevaDescripcionProducto = '';
+      this.nuevaImagen = null;
+      this.nuevoPrecioPequenoProducto = null;
+      this.nuevoPrecioGrandeProducto = null;
       this.modalController.dismiss(); // Cierra el modal
-    } catch (error:any) {
+    } catch (error: any) {
       console.error('Error al actualizar el producto:', error.message);
       this.presentToast('Error al actualizar el producto.');
     }
   }
-  
-  
+
+
   // Método para subir una imagen
   async subirImagen(imagen: File): Promise<string> {
     try {
       const storage = getStorage(); // Obtén la instancia de almacenamiento
       const storageRef = ref(storage, `productos/${imagen.name}`); // Crea una referencia en el almacenamiento
-  
+
       // Subir la imagen usando uploadBytes
       const snapshot = await uploadBytes(storageRef, imagen);
       console.log('Imagen subida:', snapshot);
-  
+
       // Obtener la URL de descarga
       const downloadURL = await getDownloadURL(storageRef);
       return downloadURL;
-    } catch (error:any) {
+    } catch (error: any) {
       console.error('Error al subir la imagen:', error);
       throw new Error('No se pudo subir la imagen');
     }
   }
-  
+
 
 
 
@@ -337,7 +364,7 @@ export class MenuListaComponent implements OnInit {
       })
   }
 
-  actualizarSubCategoria(categoriaSeleccionada: string, nuevoNombreSubCategoria: string) {        
+  actualizarSubCategoria(categoriaSeleccionada: string, nuevoNombreSubCategoria: string) {
 
     // Validación básica
     if (!categoriaSeleccionada.trim() || !nuevoNombreSubCategoria.trim()) {
@@ -510,20 +537,22 @@ export class MenuListaComponent implements OnInit {
     if (tipo === 'categoria') {
       this.nombreCategoria = item.categoria; // Asignar el nombre de la categoría seleccionada    
       this.modalCategoria.present(); // Muestra el modal de categoría
-    } else if (tipo === 'subCategoria') {      
+    } else if (tipo === 'subCategoria') {
       this.nombreSubCategoria = item.subcategoria;  // Asignar el nombre de la subcategoría seleccionada
       this.nombreSubCategoriaSeleccionada = item.subcategoria;  // Asignar también al campo específico
       this.categoriaSeleccionada = item.categoria;        // Asignar la categoría correspondiente
       this.modalSubCategoria.present();                  // Muestra el modal de subcategoría
-    } else if (tipo === 'producto') {      
+    } else if (tipo === 'producto') {
       this.nombreProducto = item.nombre;
-      this.descripcionProducto = item.descripcion
+      this.descripcionProducto = item.descripcion;
+      this.precioPequenoProducto = item.precioPequeno;
+      this.precioGrandeProducto = item.precioGrande;
       this.modalProducto.present();
     }
   }
 
-  getProductosPorSubcategoria(subcategoria: string) {    
-    return this.productos.filter(producto => {      
+  getProductosPorSubcategoria(subcategoria: string) {
+    return this.productos.filter(producto => {
       const categoriaProducto = producto.categoria ? producto.categoria.toString().toLowerCase() : '';
       return categoriaProducto === subcategoria.toLowerCase();
     });
