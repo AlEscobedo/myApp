@@ -19,3 +19,15 @@ ion-card{
   --background: #6F4E37; /* Color café */
   color: #ffffff; /* Color de texto */
 }
+ion-thumbnail img {
+  border-radius: 8px; /* Redondea las esquinas */
+  object-fit: cover; /* Ajusta la imagen a su contenedor */
+  width: 50px; /* Ajusta el tamaño según tus necesidades */
+  height: 50px; /* Ajusta el tamaño según tus necesidades */
+}
+.preview-image {
+  margin-top: 10px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}

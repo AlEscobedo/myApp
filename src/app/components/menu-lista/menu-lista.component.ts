@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonModal, AlertController, ToastController, ModalController } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
 import { BaseDatosService } from 'src/app/services/base-datos.service';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 @Component({
   selector: 'app-menu-lista',
@@ -23,7 +24,11 @@ export class MenuListaComponent implements OnInit {
   nombreCategoria = '';
   nombreSubCategoria: string = '';
 
+  imagenActual: string = '';
+
   nombreProducto = '';
+  nuevaImagen: File | null = null; // Archivo seleccionado
+  nuevaImagenPreview: string | null = null; // Vista previa de la imagen
 
   // Variables para creación de producto, categoría y subcategoría
   nombreNuevaCategoria = '';
@@ -63,6 +68,8 @@ export class MenuListaComponent implements OnInit {
     switch (modalType) {
       case 'producto':
         this.nuevoNombreProducto = '';
+        this.nuevaImagen = null;
+        this.nuevaImagenPreview = null;
         this.modalProducto.dismiss(null, 'cancel');
         break;
       case 'categoria':
@@ -166,8 +173,7 @@ export class MenuListaComponent implements OnInit {
             this.nombreNuevaCategoria = "";
           })
         break;
-      case 'crearSubCategoria':
-        console.log("Se llamó a la función crear Subcategoria, pasaste los siguientes datos: " + this.categoriaSeleccionada + ' y ' + this.nombreNuevaSubCategoria);
+      case 'crearSubCategoria':        
         // Validaciones
         if (!this.categoriaSeleccionada.trim()) {
           this.presentToast('Debe escoger una Categoria');
@@ -183,8 +189,7 @@ export class MenuListaComponent implements OnInit {
               this.presentToast('La subcategoría ya existe en esta categoría.');
 
             } else {
-              // Si no existe, podemos proceder a agregarla
-              console.log("PASASTE A PODER CREARLA BROu")
+              // Si no existe, podemos proceder a agregarla              
               this.agregarSubCategoria();
             }
           })
@@ -210,17 +215,20 @@ export class MenuListaComponent implements OnInit {
       });
   }
 
-  actualizarProducto() {
-    if (!this.nuevoNombreProducto || !this.nuevoNombreProducto.trim()) {
-      this.presentToast('El nombre del producto no puede estar vacío.');
+  async actualizarProducto() {
+    if (
+      (!this.nuevoNombreProducto || !this.nuevoNombreProducto.trim()) &&
+      !this.nuevaImagen
+    ) {
+      this.presentToast('No puedes editar campos vacíos.');
       return;
     }
   
-    const nuevoNombreLimpio = this.nuevoNombreProducto.trim();
-    const nombreActualLimpio = this.nombreProducto.trim();
+    const nuevoNombreLimpio = this.nuevoNombreProducto?.trim();
+    const nombreActualLimpio = this.nombreProducto?.trim();
   
-    const nuevoNombreLimpioMAYUS = this.nuevoNombreProducto.trim().toUpperCase();
-    const nombreActualLimpioMAYUS = this.nombreProducto.trim().toUpperCase();
+    const nuevoNombreLimpioMAYUS = this.nuevoNombreProducto?.trim().toUpperCase();
+    const nombreActualLimpioMAYUS = this.nombreProducto?.trim().toUpperCase();
   
     // Verifica si el nombre nuevo es igual al actual
     if (nuevoNombreLimpio === nombreActualLimpio || nuevoNombreLimpioMAYUS === nombreActualLimpioMAYUS) {
@@ -230,27 +238,58 @@ export class MenuListaComponent implements OnInit {
   
     // Verifica si ya existe un producto con el nuevo nombre
     const existe = this.baseDatosService.productoYaExiste(nuevoNombreLimpio, this.productos);
-  
     if (existe) {
       this.presentToast('Ya existe un producto con este nombre.');
       return;
     }
   
+    // Si se ha actualizado la imagen, sube la imagen y obtiene la URL
+    let urlImagen = this.imagenActual; // Mantén la imagen actual si no se selecciona una nueva imagen
+    if (this.nuevaImagen) {
+      urlImagen = await this.baseDatosService.subirImagen(this.nuevaImagen); // Sube la imagen y obtiene la URL
+    }
+  
     // Actualiza el producto en la base de datos
-    this.baseDatosService.actualizarProductoPorNombre(nombreActualLimpio, nuevoNombreLimpio)
-      .then(() => {
-        this.presentToast('Producto actualizado correctamente.');
-        this.modalController.dismiss(); // Cierra el modal
-      })
-      .catch((error) => {
-        console.error('Error al actualizar el producto:', error.message);
-        this.presentToast('Error al actualizar el producto.');
-      })
-      .finally(() => {
-        this.nuevoNombreProducto = ""; // Limpiar el input
-      });
+    const actualizaciones: any = {};
+    if (nuevoNombreLimpio && nuevoNombreLimpio !== nombreActualLimpio) {
+      actualizaciones.nombre = nuevoNombreLimpio; // Actualiza el nombre si es diferente
+    }
+  
+    if (urlImagen) {
+      actualizaciones.imagen = urlImagen; // Actualiza la imagen si se ha subido una nueva imagen
+    }
+  
+    try {
+      await this.baseDatosService.actualizarProductoPorNombre(nombreActualLimpio, actualizaciones);
+      this.presentToast('Producto actualizado correctamente.');
+      this.modalController.dismiss(); // Cierra el modal
+    } catch (error:any) {
+      console.error('Error al actualizar el producto:', error.message);
+      this.presentToast('Error al actualizar el producto.');
+    }
   }
   
+  
+  // Método para subir una imagen
+  async subirImagen(imagen: File): Promise<string> {
+    try {
+      const storage = getStorage(); // Obtén la instancia de almacenamiento
+      const storageRef = ref(storage, `productos/${imagen.name}`); // Crea una referencia en el almacenamiento
+  
+      // Subir la imagen usando uploadBytes
+      const snapshot = await uploadBytes(storageRef, imagen);
+      console.log('Imagen subida:', snapshot);
+  
+      // Obtener la URL de descarga
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch (error:any) {
+      console.error('Error al subir la imagen:', error);
+      throw new Error('No se pudo subir la imagen');
+    }
+  }
+  
+
 
 
 
@@ -290,9 +329,7 @@ export class MenuListaComponent implements OnInit {
       })
   }
 
-  actualizarSubCategoria(categoriaSeleccionada: string, nuevoNombreSubCategoria: string) {
-    console.log("Categoría seleccionada:", categoriaSeleccionada);
-    console.log("Nuevo nombre de la subcategoría:", nuevoNombreSubCategoria);
+  actualizarSubCategoria(categoriaSeleccionada: string, nuevoNombreSubCategoria: string) {        
 
     // Validación básica
     if (!categoriaSeleccionada.trim() || !nuevoNombreSubCategoria.trim()) {
@@ -465,29 +502,35 @@ export class MenuListaComponent implements OnInit {
     if (tipo === 'categoria') {
       this.nombreCategoria = item.categoria; // Asignar el nombre de la categoría seleccionada    
       this.modalCategoria.present(); // Muestra el modal de categoría
-    } else if (tipo === 'subCategoria') {
-      console.log('Datos recibidos:', item);
+    } else if (tipo === 'subCategoria') {      
       this.nombreSubCategoria = item.subcategoria;  // Asignar el nombre de la subcategoría seleccionada
       this.nombreSubCategoriaSeleccionada = item.subcategoria;  // Asignar también al campo específico
       this.categoriaSeleccionada = item.categoria;        // Asignar la categoría correspondiente
       this.modalSubCategoria.present();                  // Muestra el modal de subcategoría
-    } else if (tipo === 'producto') {
-      console.log(item.nombre)
+    } else if (tipo === 'producto') {      
       this.nombreProducto = item.nombre;
       this.modalProducto.present();
     }
   }
 
-  getProductosPorSubcategoria(subcategoria: string) {
-    console.log('Productos:', this.productos); // Verificar los productos
-    return this.productos.filter(producto => {
-      console.log('Producto:', producto); // Verificar cada producto
+  getProductosPorSubcategoria(subcategoria: string) {    
+    return this.productos.filter(producto => {      
       const categoriaProducto = producto.categoria ? producto.categoria.toString().toLowerCase() : '';
       return categoriaProducto === subcategoria.toLowerCase();
     });
   }
-  
 
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.nuevaImagen = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.nuevaImagenPreview = reader.result as string;
+      };
+      reader.readAsDataURL(this.nuevaImagen);
+    }
+  }
 
 }

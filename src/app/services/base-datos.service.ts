@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
+import { getStorage, ref } from 'firebase/storage';
+import { AngularFireStorage } from '@angular/fire/compat/storage'; // Asegúrate de tener esta importación
 
 
 @Injectable({
@@ -8,7 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class BaseDatosService {
 
-  constructor(private firestore: AngularFirestore) { }
+  constructor(private firestore: AngularFirestore, private storage: AngularFireStorage) { }
 
   // Método para obtener categorías
   obtenerCategorias(): Observable<any[]> {
@@ -62,6 +64,22 @@ export class BaseDatosService {
       });
   }
 
+
+   // Método para subir imagen y obtener la URL
+   subirImagen(imagen: File): Promise<string> {
+    const filePath = `productos/${Date.now()}_${imagen.name}`; // Genera un nombre único para la imagen
+    const storageRef = this.storage.ref(filePath);
+    const uploadTask = storageRef.put(imagen); // Subir la imagen
+
+    return new Promise<string>((resolve, reject) => {
+      uploadTask.snapshotChanges().toPromise().then(() => {
+        storageRef.getDownloadURL().toPromise().then(url => {
+          resolve(url); // Retorna la URL de la imagen subida
+        }).catch(reject); // En caso de error al obtener la URL
+      }).catch(reject); // En caso de error al subir la imagen
+    });
+  }
+
   // Método para verificar si una categoría ya existe
   categoriaYaExiste(nombreCategoria: string): Promise<boolean> {
     const nombreEnMayusculas = nombreCategoria.toUpperCase();
@@ -113,10 +131,9 @@ export class BaseDatosService {
 
 
   // Método para actualizar el nombre de una categoría
-  actualizarProductoPorNombre(nombreProducto: string, nuevoNombreProducto: string): Promise<void> {
-    const nombreLimpio = nombreProducto.trim(); // Elimina espacios adicionales.
-    const nuevoNombreLimpio = nuevoNombreProducto.trim(); // Elimina espacios adicionales.
-
+  async actualizarProductoPorNombre(nombreProducto: string, actualizaciones: any): Promise<void> {
+    const nombreLimpio = nombreProducto.trim();
+  
     return this.firestore.collection('Productos', ref => ref.where('nombre', '==', nombreLimpio))
       .get()
       .toPromise()
@@ -126,13 +143,22 @@ export class BaseDatosService {
         }
         // Obtiene el ID del documento encontrado
         const docRef = snapshot.docs[0].ref;
-        return docRef.update({ nombre: nuevoNombreLimpio }); // Actualiza el campo 'nombre'.
+        return docRef.update(actualizaciones); // Actualiza los campos especificados
       })
       .catch((error) => {
         console.error('Error al actualizar el producto:', error.message);
         throw new Error('Error al actualizar el producto: ' + error.message);
       });
   }
+  
+
+
+  getStorageRef(nombreArchivo: string) {
+    const storage = getStorage(); // Obtén la instancia del almacenamiento
+    return ref(storage, `productos/${nombreArchivo}`); // Crea una referencia con el nombre del archivo
+  }
+
+
 
 
 
