@@ -49,6 +49,17 @@ export class MenuListaComponent implements OnInit {
   nuevaDescripcionProducto: string = '';
   nuevoPrecioPequenoProducto: number | null = null;
   nuevoPrecioGrandeProducto: number | null = null;
+  nuevasubcategoriaSeleccionada: string = '';
+  
+  catSeleccionada: any;
+  subcategoriaSeleccionada: any;  
+
+
+  subcategoriaOriginal: string | null = null;
+
+
+  subcategorias: any[] = [];
+
 
   // Lista de categorías para mostrar en el componente
   categorias: any[] = [];
@@ -62,6 +73,7 @@ export class MenuListaComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.subcategoriaOriginal = this.subcategoriaSeleccionada;
     // Cargar las categorías desde la base de datos al inicializar el componente
     this.baseDatosService.obtenerCategorias().subscribe((data) => {
       this.categorias = data;
@@ -71,6 +83,8 @@ export class MenuListaComponent implements OnInit {
     this.baseDatosService.obtenerProductos().subscribe((data) => {
       this.productos = data;
     });
+
+
   }
 
   // Cerrar el modal específico
@@ -79,7 +93,7 @@ export class MenuListaComponent implements OnInit {
       case 'producto':
         this.nuevoNombreProducto = '';
         this.nuevaImagen = null;
-        this.nuevaDescripcionProducto = '';        
+        this.nuevaDescripcionProducto = '';
         this.nuevoPrecioPequenoProducto = null;
         this.nuevoPrecioGrandeProducto = null;
 
@@ -236,7 +250,8 @@ export class MenuListaComponent implements OnInit {
       (!this.nuevaDescripcionProducto || !this.nuevaDescripcionProducto.trim()) &&
       (this.nuevoPrecioPequenoProducto === null || this.nuevoPrecioPequenoProducto === this.precioPequenoProducto) &&
       (this.nuevoPrecioGrandeProducto === null || this.nuevoPrecioGrandeProducto === this.precioGrandeProducto) &&
-      (this.nuevoEstadoProducto === null || this.nuevoEstadoProducto === this.estadoProducto)
+      (this.nuevoEstadoProducto === null || this.nuevoEstadoProducto === this.estadoProducto) &&
+      (this.subcategoriaSeleccionada === null || this.subcategoriaSeleccionada === this.subcategoriaOriginal)
     ) {
       this.presentToast('Tienes que hacer al menos un cambio para guardar.');
       return;
@@ -244,6 +259,10 @@ export class MenuListaComponent implements OnInit {
 
     const nuevoNombreLimpio = this.nuevoNombreProducto?.trim();
     const nombreActualLimpio = this.nombreProducto?.trim();
+
+    const nuevoEstadoProducto = this.nuevoEstadoProducto;
+    const subcategoriaSeleccionadaLimpia = this.subcategoriaSeleccionada?.trim();
+    const subcategoriaOriginalLimpia = this.subcategoriaOriginal?.trim();
 
     const nuevoNombreLimpioMAYUS = this.nuevoNombreProducto?.trim().toUpperCase();
     const nombreActualLimpioMAYUS = this.nombreProducto?.trim().toUpperCase();
@@ -289,7 +308,12 @@ export class MenuListaComponent implements OnInit {
 
     if (this.nuevoEstadoProducto !== null && this.nuevoEstadoProducto !== this.estadoProducto) {
       actualizaciones.disponible = this.nuevoEstadoProducto; // Actualiza el estado si es diferente
-  }
+    }
+
+    // Si se seleccionó una nueva subcategoría, actualiza el campo correspondiente
+    if (this.subcategoriaSeleccionada && this.subcategoriaSeleccionada !== this.subcategoriaOriginal) {
+      actualizaciones.categoria = this.subcategoriaSeleccionada; // Actualiza la subcategoría seleccionada
+    }
 
     if (urlImagen) {
       actualizaciones.imagen = urlImagen; // Actualiza la imagen si se ha subido una nueva imagen
@@ -305,13 +329,15 @@ export class MenuListaComponent implements OnInit {
       this.nuevaImagen = null;
       this.nuevoPrecioPequenoProducto = null;
       this.nuevoPrecioGrandeProducto = null;
-      this.nuevoEstadoProducto = null; // Inicialmente null
+      this.nuevoEstadoProducto = null;
+      this.subcategoriaSeleccionada = null; // Restablecer la subcategoría
       this.modalController.dismiss(); // Cierra el modal
     } catch (error: any) {
       console.error('Error al actualizar el producto:', error.message);
       this.presentToast('Error al actualizar el producto.');
     }
-  }
+}
+
 
 
   // Método para subir una imagen
@@ -578,6 +604,16 @@ export class MenuListaComponent implements OnInit {
         this.nuevaImagenPreview = reader.result as string;
       };
       reader.readAsDataURL(this.nuevaImagen);
+    }
+  }
+
+
+
+  // Método para actualizar las subcategorías cuando se selecciona una categoría
+  cargarSubcategorias() {
+    if (this.catSeleccionada) {
+      this.subcategorias = this.catSeleccionada.subcategorias;
+      this.subcategoriaSeleccionada = null; // Reinicia la subcategoría seleccionada
     }
   }
 

@@ -301,7 +301,20 @@
         </ion-item>
 
 
-
+        <ion-item>
+          <ion-label>Mover de Categoría</ion-label>
+          <ion-select placeholder="Categorias" [(ngModel)]="catSeleccionada" (ionChange)="cargarSubcategorias()">
+            <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">{{categoria.categoria}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-item *ngIf="subcategorias.length > 0">
+          <ion-label>Seleccione una subcategoría</ion-label>
+          <ion-select placeholder="Subcategorias" [(ngModel)]="subcategoriaSeleccionada">
+            <ion-select-option *ngFor="let subcategoria of subcategorias" [value]="subcategoria">{{subcategoria}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        
 
 
         <!-- Botón para eliminar -->
