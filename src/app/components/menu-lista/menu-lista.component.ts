@@ -168,10 +168,7 @@ export class MenuListaComponent implements OnInit {
         break;
       case 'crearProducto':
         this.modalCrearProducto.dismiss(
-          {
-            // agregar codigo
-          },
-          'confirm'
+          
         );
         break;
       case 'crearCategoria':
