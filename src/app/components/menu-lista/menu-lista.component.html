@@ -54,7 +54,7 @@
         <!-- Campo para cambiar la imagen -->
         <ion-item>
           <ion-label class="ion-text-wrap" position="stacked">Nueva Imagen</ion-label>
-          <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+          <input  type="file" (change)="onFileSelected($event)" accept="image/*" />
           <img *ngIf="nuevaImagenPreview" [src]="nuevaImagenPreview" alt="Vista previa" class="preview-image" />
         </ion-item>
 

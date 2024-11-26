@@ -50,11 +50,11 @@ export class MenuListaComponent implements OnInit {
   nuevoPrecioPequenoProducto: number | null = null;
   nuevoPrecioGrandeProducto: number | null = null;
   nuevasubcategoriaSeleccionada: string = '';
-  
-  catSeleccionada: any;
-  subcategoriaSeleccionada: any;  
 
-  crearImagen = this.nuevaImagen;
+  catSeleccionada: any;
+  subcategoriaSeleccionada: any;
+
+  crearImagen: any;
   crearNombreProducto: any;
   crearDescripcionProducto: any;
   crearPrecioPequenoProducto: any;
@@ -106,7 +106,7 @@ export class MenuListaComponent implements OnInit {
         this.nuevoPrecioPequenoProducto = null;
         this.nuevoPrecioGrandeProducto = null;
         this.catSeleccionada = null;
-        this.subcategoriaSeleccionada = null;        
+        this.subcategoriaSeleccionada = null;
         this.nuevaImagenPreview = null;
         this.modalProducto.dismiss(null, 'cancel');
         break;
@@ -166,11 +166,39 @@ export class MenuListaComponent implements OnInit {
           'confirm'
         );
         break;
+      // Función para verificar si el nombre del producto ya existe antes de crear un nuevo producto
       case 'crearProducto':
-        this.modalCrearProducto.dismiss(
-          
-        );
+        // Verifica que los campos no estén vacíos
+        if (!this.verificarCamposVacios()) {
+          return; // Detiene el proceso si algún campo está vacío
+        }
+
+        // Verifica si el nombre del producto ya existe
+        const nombreProductoNormalizado = this.crearNombreProducto.trim().toUpperCase(); // Normaliza el nombre del producto a mayúsculas
+        this.baseDatosService.obtenerProductos().subscribe((productos) => {
+          const productoExistente = this.baseDatosService.productoYaExiste(nombreProductoNormalizado, productos);
+
+          if (productoExistente) {
+            this.presentToast('Ya existe un producto con este nombre.');
+          } else {
+            // Si el producto no existe, procede a crear el nuevo producto
+            this.modalCrearProducto.dismiss(
+              {
+                nombreProducto: this.crearNombreProducto,
+                descripcionProducto: this.crearDescripcionProducto,
+                precioPequenoProducto: this.crearPrecioPequenoProducto,
+                precioGrandeProducto: this.crearPrecioGrandeProducto,
+                estadoProducto: this.crearEstadoProducto,
+                categoria: this.crearCategoria,
+              },
+              'confirm'
+            );
+          }
+        });
         break;
+
+
+
       case 'crearCategoria':
         const nombreValidado = this.nombreNuevaCategoria.trim(); // Elimina espacios al inicio y al final
 
@@ -242,6 +270,59 @@ export class MenuListaComponent implements OnInit {
           })
     }
   }
+
+  verificarCamposVacios(): boolean {
+    // Validación de la imagen
+    if (!this.crearImagen) {
+      this.presentToast('La imagen es obligatoria.');
+      return false;
+    }
+
+    // Validación del nombre del producto
+    if (!this.crearNombreProducto || !this.crearNombreProducto.trim()) {
+      this.presentToast('El nombre del producto es obligatorio.');
+      return false;
+    }
+
+    // Validación de la descripción del producto
+    if (!this.crearDescripcionProducto || !this.crearDescripcionProducto.trim()) {
+      this.presentToast('La descripción del producto es obligatoria.');
+      return false;
+    }
+
+    // Validación de los precios
+    const precioPequeno = parseFloat(this.crearPrecioPequenoProducto); // Convierte el precio pequeño a número
+    const precioGrande = parseFloat(this.crearPrecioGrandeProducto); // Convierte el precio grande a número
+
+    if (isNaN(precioPequeno) || precioPequeno <= 0) {
+      this.presentToast('El precio pequeño debe ser un número mayor a 0.');
+      return false;
+    }
+
+    if (isNaN(precioGrande) || precioGrande <= 0) {
+      this.presentToast('El precio grande debe ser un número mayor a 0.');
+      return false;
+    }
+
+    // Validación del estado (booleano)
+    if (this.crearEstadoProducto === null || this.crearEstadoProducto === undefined) {
+      this.presentToast('Debe seleccionar un estado para el producto.');
+      return false;
+    }
+
+    // Validación de la categoría
+    if (!this.crearCategoria || !this.crearCategoria.trim()) {
+      this.presentToast('Debe seleccionar una categoría.');
+      return false;
+    }
+
+    // Si todos los campos están completos, devuelve true
+    this.presentToast('Todos los campos están correctamente llenos.');
+    return true;
+  }
+
+
+
 
   // Lógica para agregar la subcategoría
   agregarSubCategoria() {
@@ -351,7 +432,7 @@ export class MenuListaComponent implements OnInit {
       console.error('Error al actualizar el producto:', error.message);
       this.presentToast('Error al actualizar el producto.');
     }
-}
+  }
 
 
 
@@ -613,14 +694,21 @@ export class MenuListaComponent implements OnInit {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.nuevaImagen = input.files[0];
+      this.crearImagen = input.files[0]; // Almacena la imagen seleccionada
+      this.nuevaImagen = input.files[0]; // También actualiza nuevaImagen si lo necesitas en otro lugar
+
       const reader = new FileReader();
       reader.onload = () => {
-        this.nuevaImagenPreview = reader.result as string;
+        this.nuevaImagenPreview = reader.result as string; // Previsualiza la imagen
       };
-      reader.readAsDataURL(this.nuevaImagen);
+      reader.onerror = (error) => {
+        console.error('Error al leer el archivo:', error);
+        this.presentToast('Error al procesar la imagen seleccionada.');
+      };
+      reader.readAsDataURL(this.crearImagen); // Lee la imagen seleccionada
     }
   }
+
 
 
 
