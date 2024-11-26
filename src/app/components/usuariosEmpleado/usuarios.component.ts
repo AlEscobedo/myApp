@@ -14,6 +14,8 @@ export class UsuariosComponent implements OnInit {
 
   // Lista de usuarios
   usuarios: any[] = [];
+  usuarioEditado: any = {};
+  usuarioEditadoOriginal: any = {};
 
   constructor(private alertController: AlertController,
     private baseDatosService: BaseDatosService) { }
@@ -26,6 +28,7 @@ export class UsuariosComponent implements OnInit {
   }
 
   isModalOpen = false;
+  isEditModalOpen = false; 
 
   nuevoEmpleadoNombre = '';
   nuevoEmpleadoApellido = '';
@@ -36,6 +39,17 @@ export class UsuariosComponent implements OnInit {
 
   abrirModalNuevoEmpleado() {
     this.isModalOpen = true;
+  }
+  abrirModalEdicion(usuario: any) {
+    this.usuarioEditadoOriginal = { ...usuario };  // Guardar los datos originales
+    this.usuarioEditado = { ...usuario };  // Copiar los datos del usuario para editarlos    
+    this.isEditModalOpen = true;
+  }
+  
+  
+
+  closeEditModal() {
+    this.isEditModalOpen = false;
   }
 
   closeModal() {
@@ -49,6 +63,45 @@ export class UsuariosComponent implements OnInit {
   normalizarRut(rut: string): string {
     return rut.trim().replace(/\./g, '').replace('-', ''); // Elimina puntos y guion
   }
+
+  async guardarEdicion() {
+    try {
+      // Verificar si hubo algún cambio en los campos
+      if (
+        this.usuarioEditado.Nombres === this.usuarioEditadoOriginal.Nombres &&
+        this.usuarioEditado.Apellidos === this.usuarioEditadoOriginal.Apellidos &&
+        this.usuarioEditado.Telefono === this.usuarioEditadoOriginal.Telefono &&
+        this.usuarioEditado.Email === this.usuarioEditadoOriginal.Email &&
+        this.usuarioEditado.rol === this.usuarioEditadoOriginal.rol
+      ) {
+        await this.mostrarMensaje('Sin cambios', 'No se realizaron cambios en los datos del usuario.');        
+        return;
+      }
+  
+      // Validar teléfono
+      if (!this.validarTelefono(this.usuarioEditado.Telefono)) {
+        await this.mostrarMensaje('Error', 'El número de teléfono debe contener 8 dígitos.');
+        return;
+      }
+  
+      // Validar email
+      if (!this.validarEmail(this.usuarioEditado.Email)) {
+        await this.mostrarMensaje('Error', 'El EMAIL ingresado no es válido.');
+        return;
+      }
+  
+      // Si hubo cambios y las validaciones son correctas, llamamos al servicio para actualizar los datos
+      await this.baseDatosService.actualizarUsuario(this.usuarioEditado);
+      await this.mostrarMensaje('Éxito', 'Usuario actualizado exitosamente.');
+      this.closeEditModal();
+    } catch (error) {
+      console.error('Error al actualizar el usuario:', error);  // Imprimir el error completo
+      await this.mostrarMensaje('Error', 'Hubo un problema al actualizar el usuario.');
+    }
+  }
+  
+  
+  
 
   //Metodo para eliminar usuario
    // Función para eliminar el usuario
@@ -230,7 +283,8 @@ export class UsuariosComponent implements OnInit {
 
   // Validar teléfono con el formato +56 seguido de 9 dígitos
   validarTelefono(telefono: string): boolean {
-    const regexTelefono = /^\+56\d{9}$/; // +56 seguido de 9 dígitos
+    const regexTelefono = /^\d{8}$/;  // Solo 9 dígitos
     return regexTelefono.test(telefono);
   }
+  
 }

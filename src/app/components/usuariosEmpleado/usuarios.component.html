@@ -37,7 +37,7 @@
           <!-- Contenedor de botones (uno arriba del otro) -->
           <ion-buttons slot="end" style="flex-direction: column;">            
             <!-- Botón para editar -->
-            <ion-button color="primary">
+            <ion-button color="primary" (click)="abrirModalEdicion(usuario)">
               <ion-icon slot="icon-only" name="create-outline"></ion-icon>
             </ion-button>
 
@@ -95,6 +95,53 @@
     </ng-template>
   </ion-modal>
 
+  <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="closeEditModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="closeEditModal()">Salir</ion-button>
+          </ion-buttons>
+          <ion-title class="centered-title">Editar Usuario</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="guardarEdicion()" [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+  
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-label position="floating">Nombres</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Nombres" name="nombres" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="floating">Apellidos</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Apellidos" name="apellidos" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="floating">Teléfono</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Telefono" name="telefono" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Email" name="email" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Tipo</ion-label>
+          <ion-select [(ngModel)]="usuarioEditado.rol" name="rol" required>
+            <ion-select-option value="Empleado">Empleado</ion-select-option>
+            <ion-select-option value="Admin">Admin</ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
   
 
 </ion-content>

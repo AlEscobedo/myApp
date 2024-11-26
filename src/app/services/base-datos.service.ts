@@ -79,10 +79,46 @@ export class BaseDatosService {
   }
   
   
-
-  actualizarUsuario(id: string, datos: any): Promise<void> {
-    return this.firestore.collection('Usuario').doc(id).update(datos);
+  async actualizarUsuario(usuario: any): Promise<void> {
+    try {
+      // Esperar a que el query se resuelva
+      const querySnapshot = await this.firestore
+        .collection('Usuario', ref => ref.where('rut', '==', usuario.rut))
+        .get()
+        .toPromise();  // Convierte el Observable en una Promesa para usar await
+  
+      // Comprobar si querySnapshot es undefined o vacío
+      if (!querySnapshot || querySnapshot.empty) {
+        throw new Error('No se encontró el usuario con ese rut');
+      }
+  
+      // Obtener la referencia del primer documento que coincide con el rut
+      const docRef = querySnapshot.docs[0].ref;
+  
+      // Actualizar los datos del usuario
+      await docRef.update({
+        Nombres: usuario.Nombres,
+        Apellidos: usuario.Apellidos,
+        Telefono: usuario.Telefono,
+        Email: usuario.Email,
+        rol: usuario.rol
+      });
+  
+      console.log('Usuario actualizado exitosamente');
+    } catch (error) {
+      console.error('Error al actualizar el usuario:', error);
+      throw error;  // Re-lanzar el error para manejarlo en el lugar que se llame a esta función
+    }
   }
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
 
   // Método para agregar un nuevo usuario
