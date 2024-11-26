@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { getStorage, ref } from 'firebase/storage';
 import { AngularFireStorage } from '@angular/fire/compat/storage'; // Asegúrate de tener esta importación
 import { finalize } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 
 
 @Injectable({
@@ -32,7 +33,7 @@ export class BaseDatosService {
     const storagePath = `productos_imagenes/${producto.nombreProducto}`;
     const fileRef = this.storage.ref(storagePath);
     const uploadTask = this.storage.upload(storagePath, archivo);
-  
+
     return new Promise((resolve, reject) => {
       uploadTask.snapshotChanges().pipe(
         finalize(() => {
@@ -53,12 +54,41 @@ export class BaseDatosService {
       ).subscribe();
     });
   }
-  
+
 
   // Método para agregar una nueva categoría
   agregarCategoria(categoria: any): Promise<void> {
     const id = this.firestore.createId();  // Crea un ID único para la nueva categoría
     return this.firestore.collection('Categoria').doc(id).set(categoria);  // Agrega la categoría a Firestore
+  }
+
+  eliminarUsuarioPorRut(rut: string): Promise<void> {
+    return this.firestore
+      .collection('Usuario', ref => ref.where('rut', '==', rut))
+      .get()
+      .toPromise()
+      .then((querySnapshot) => {
+        if (querySnapshot && !querySnapshot.empty) {
+          // Si encontramos el documento con ese RUT, lo eliminamos
+          const docId = querySnapshot.docs[0].id;
+          return this.firestore.collection('Usuario').doc(docId).delete();
+        } else {
+          throw new Error('Usuario no encontrado');
+        }
+      });
+  }
+  
+  
+
+  actualizarUsuario(id: string, datos: any): Promise<void> {
+    return this.firestore.collection('Usuario').doc(id).update(datos);
+  }
+
+
+  // Método para agregar un nuevo usuario
+  agregarUsuario(usuario: any): Promise<void> {
+    const id = this.firestore.createId(); // Crea un ID único para el nuevo usuario
+    return this.firestore.collection('Usuario').doc(id).set(usuario);
   }
 
   eliminarProductoPorNombre(nombreProducto: string): Promise<void> {
@@ -139,9 +169,14 @@ export class BaseDatosService {
     });
   }
 
+  async rutYaExiste(rut: string): Promise<boolean> {    
+    const query = this.firestore
+      .collection('Usuario', ref => ref.where('rut', '==', rut))
+      .get();
 
-
-
+    const snapshot = await firstValueFrom(query);
+    return snapshot && !snapshot.empty; // Retorna `true` si se encontró al menos un documento.
+  }
 
   // Método para actualizar el nombre de una categoría
   actualizarCategoriaPorNombre(nombreCategoria: string, nuevoNombre: string): Promise<void> {

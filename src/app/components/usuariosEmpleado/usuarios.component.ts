@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonModal, AlertController } from '@ionic/angular';
-import { OverlayEventDetail } from '@ionic/core/components';
 import { BaseDatosService } from 'src/app/services/base-datos.service';
 
 @Component({
@@ -12,22 +11,12 @@ export class UsuariosComponent implements OnInit {
   @ViewChild(IonModal) modal!: IonModal;
 
   message = 'Este modal se abre cuando el botón es presionado.';
-  rut: string = "";
-  nombre: string = "";
-  apellido: string = "";
-  correo: string = "";
-  telefono: string = "";
-  tipoUsuario: string = "";    
-  usuarioActual: any;  // Para almacenar el usuario que se está editando
-  usuarioOriginal: any;
-  esEdicion: boolean = false;
 
   // Lista de usuarios
   usuarios: any[] = [];
 
   constructor(private alertController: AlertController,
-              private baseDatosService: BaseDatosService
-  ) { }
+    private baseDatosService: BaseDatosService) { }
 
   ngOnInit() {
     this.baseDatosService.obtenerUsuarios().subscribe((data) => {
@@ -35,66 +24,38 @@ export class UsuariosComponent implements OnInit {
       this.usuarios = data.filter((usuario: any) => usuario.rol === 'Empleado');
     });
   }
-  
 
-  // Función para abrir el modal y cargar los datos del usuario
-  abrirModal(usuario: any) {
-    this.usuarioActual = usuario;  // Define el usuario actual para edición
-    this.usuarioOriginal = { ...usuario };
-    this.esEdicion = true;
+  isModalOpen = false;
 
-    this.rut = usuario.rut;
-    this.nombre = usuario.nombre;
-    this.tipoUsuario = usuario.tipoUsuario; 
-        
+  nuevoEmpleadoNombre = '';
+  nuevoEmpleadoApellido = '';
+  nuevoEmpleadoRut = '';
+  nuevoEmpleadoTelefono = '';
+  nuevoEmpleadoEmail = '';
+  nuevoEmpleadoRol = 'Empleado';
 
-    this.modal.present();  // Abre el modal
+  abrirModalNuevoEmpleado() {
+    this.isModalOpen = true;
   }
 
-  // Cerrar el modal sin realizar cambios
-  cancel() {
-    this.modal.dismiss(null, 'cancel');
+  closeModal() {
+    this.nuevoEmpleadoNombre = '';
+    this.nuevoEmpleadoApellido = '';
+    this.nuevoEmpleadoRut = '';
+    this.nuevoEmpleadoTelefono = '';
+    this.nuevoEmpleadoEmail = '';
+    this.isModalOpen = false;
+  }
+  normalizarRut(rut: string): string {
+    return rut.trim().replace(/\./g, '').replace('-', ''); // Elimina puntos y guion
   }
 
-  async confirm() {
-    if (!this.validarRut(this.rut)) {
-      const alert = await this.alertController.create({
-        header: 'RUT no válido',
-        message: 'Por favor ingresa un RUT válido.',
-        buttons: ['OK']
-      });
-      await alert.present();
-      return;
-    }
-    
-
-    if (this.usuarioActual) {
-      // Editar usuario existente: solo actualiza campos que hayan cambiado
-      if (this.rut !== this.usuarioOriginal.rut) {
-        this.usuarioActual.rut = this.rut;
-      }
-      if (this.nombre !== this.usuarioOriginal.nombre) {
-        this.usuarioActual.nombre = this.nombre;
-      }
-      if (this.tipoUsuario !== this.usuarioOriginal.tipoUsuario) {
-        this.usuarioActual.tipoUsuario = this.tipoUsuario;
-      }                
-    }
-
-    this.modal.dismiss({
-      nombre: this.nombre,
-      rut: this.rut,
-      tipoUsuario: this.tipoUsuario
-    }, 'confirm');
-  }
-
-
-
-  // Eliminar el usuario (con confirmación)
-  async delete() {
-    const alert = await this.alertController.create({
-      header: 'Confirmar Eliminación',
-      message: '¿Estás seguro que deseas eliminar este usuario?',
+  //Metodo para eliminar usuario
+   // Función para eliminar el usuario
+   async eliminarUsuario(usuario: any) {
+    const confirmAlert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Estás seguro de que deseas eliminar este usuario?' + usuario.Nombres + ' ' + usuario.rut,
       buttons: [
         {
           text: 'Cancelar',
@@ -102,85 +63,174 @@ export class UsuariosComponent implements OnInit {
         },
         {
           text: 'Eliminar',
-          role: 'destructive',
-          handler: () => {
-            this.eliminarUsuario();
-          }
-        }
-      ]
+          handler: async () => {
+            // Llamar al servicio para eliminar el usuario
+            try {
+              await this.baseDatosService.eliminarUsuarioPorRut(usuario.rut);  // Suponiendo que el usuario tiene un ID único
+              this.usuarios = this.usuarios.filter(u => u.rut !== usuario.rut);  // Eliminar de la lista visual
+              await this.mostrarMensaje('Éxito', 'Usuario eliminado exitosamente.');
+            } catch (error) {
+              await this.mostrarMensaje('Error', 'Hubo un problema al eliminar el usuario.');
+            }
+          },
+        },
+      ],
     });
 
+    await confirmAlert.present();
+  }
+
+
+  // Método para crear usuario
+  async crearUsuario() {
+    // Verificar que los campos no estén vacíos
+    if (!this.nuevoEmpleadoNombre.trim()) {
+      await this.mostrarMensaje('Error', 'El campo "Nombre" no puede estar vacío.');
+      return;
+    }
+
+    if (!this.nuevoEmpleadoApellido.trim()) {
+      await this.mostrarMensaje('Error', 'El campo "Apellido" no puede estar vacío.');
+      return;
+    }
+
+    if (!this.nuevoEmpleadoRut.trim()) {
+      await this.mostrarMensaje('Error', 'El campo "RUT" no puede estar vacío.');
+      return;
+    }
+
+    // Validar RUT
+    if (!this.validarRut(this.nuevoEmpleadoRut)) {
+      await this.mostrarMensaje('Error', 'El RUT ingresado no es válido.');
+      return;
+    }
+
+    // Verificar si el RUT ya existe en la base de datos
+    const rutExistente = await this.baseDatosService.rutYaExiste(this.nuevoEmpleadoRut);
+    if (rutExistente) {
+      await this.mostrarMensaje('Error', 'El RUT ya se encuentra registrado.');
+      return;
+    }
+
+    // Continuar con el proceso si el RUT es válido y no existe
+    if (!this.nuevoEmpleadoTelefono.trim()) {
+      await this.mostrarMensaje('Error', 'El campo "Teléfono" no puede estar vacío.');
+      return;
+    }
+
+    if (!this.validarTelefono(this.nuevoEmpleadoTelefono)) {
+      await this.mostrarMensaje('Error', 'El número de teléfono debe comenzar con +56 y contener 9 dígitos.');
+      return;
+    }
+
+    if (!this.nuevoEmpleadoEmail.trim()) {
+      await this.mostrarMensaje('Error', 'El campo "Email" no puede estar vacío.');
+      return;
+    }
+
+    if (!this.validarEmail(this.nuevoEmpleadoEmail)) {
+      await this.mostrarMensaje('Error', 'El EMAIL ingresado no es válido.');
+      return;
+    }
+
+    // Guardar usuario en la base de datos (código para guardar el usuario aquí)
+    const usuario = {
+      Nombres: this.nuevoEmpleadoNombre,
+      Apellidos: this.nuevoEmpleadoApellido,
+      rut: this.nuevoEmpleadoRut,
+      Telefono: this.nuevoEmpleadoTelefono,
+      Email: this.nuevoEmpleadoEmail,
+      rol: 'Empleado'
+    }
+    // Guardar el usuario en la base de datos
+    try {
+      await this.baseDatosService.agregarUsuario(usuario);
+      await this.mostrarMensaje('Éxito', 'El usuario ' + this.nuevoEmpleadoNombre + ' ' + this.nuevoEmpleadoApellido + ' se ha creado exitosamente.');
+      this.nuevoEmpleadoNombre = '';
+      this.nuevoEmpleadoApellido = '';
+      this.nuevoEmpleadoRut = '';
+      this.nuevoEmpleadoTelefono = '';
+      this.nuevoEmpleadoEmail = '';
+      this.isModalOpen = false;
+
+      // Limpiar los campos después de guardar
+      this.nuevoEmpleadoNombre = '';
+      this.nuevoEmpleadoApellido = '';
+      this.nuevoEmpleadoRut = '';
+      this.nuevoEmpleadoTelefono = '';
+      this.nuevoEmpleadoEmail = '';
+      this.isModalOpen = false;
+    } catch (error) {
+      await this.mostrarMensaje('Error', 'Hubo un problema al guardar el usuario.');
+    }
+
+  }
+
+  async mostrarMensaje(titulo: string, mensaje: string) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: mensaje,
+      buttons: ['OK'],
+    });
     await alert.present();
   }
 
-  abrirModalNuevoEmpleado() {
-    this.usuarioActual = null;  // Usuario nuevo, así que dejamos usuarioActual en null
-    this.rut = '';
-    this.nombre = '';
-    this.tipoUsuario = 'Empleado';  
-    this.esEdicion = false;
-    this.modal.present();  // Abre el modal
+  // Validar si el correo tiene un formato válido
+  validarEmail(correo: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailRegex.test(correo);
   }
 
-  
+  // Función para validar el RUT
   validarRut(rut: string): boolean {
-    // Remover puntos y guion del RUT
-    const rutSinFormato = rut.replace(/\./g, '').replace('-', '');
+    // Eliminar espacios en blanco al principio y al final
+    const rutTrim = rut.trim();
 
-    // Verificar que el RUT tenga al menos 9 caracteres
-    if (rutSinFormato.length < 9) return false;
+    // Comprobar si el RUT tiene el formato correcto: 8 números + guion + 1 dígito
+    const regex = /^\d{8}-[0-9Kk]{1}$/;
 
-    // Separar el número base y el dígito verificador
-    const cuerpo = rutSinFormato.slice(0, -1);
-    let dv = rutSinFormato.slice(-1).toUpperCase();
+    // Verificar si el RUT coincide con la expresión regular
+    if (!regex.test(rutTrim)) {
+      return false;
+    }
 
-    // Calcular el dígito verificador esperado
+    // Separar el cuerpo del RUT y el dígito verificador
+    const [cuerpo, dv] = rutTrim.split('-');
+
+    // Verificar que el dígito verificador sea válido (calculado en función del cuerpo del RUT)
+    if (!this.validarDigitoVerificador(cuerpo, dv)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // Función para validar el dígito verificador
+  validarDigitoVerificador(cuerpo: string, dv: string): boolean {
     let suma = 0;
     let multiplo = 2;
 
+    // Realizar el cálculo del dígito verificador
     for (let i = cuerpo.length - 1; i >= 0; i--) {
       suma += parseInt(cuerpo[i]) * multiplo;
       multiplo = multiplo < 7 ? multiplo + 1 : 2;
     }
 
+    // Calcular el dígito verificador esperado
     const dvEsperado = 11 - (suma % 11);
-    dv = dv === 'K' ? '10' : dv === '0' ? '11' : dv;
 
-    return dv === dvEsperado.toString();
+    // Ajuste del dígito verificador
+    const dvCalculado = dvEsperado === 10 ? 'K' : dvEsperado === 11 ? '0' : dvEsperado.toString();
+
+    // Comprobar si el dígito verificador es correcto
+    return dv.toUpperCase() === dvCalculado;
   }
 
 
 
-  // Acción para eliminar el usuario
-  eliminarUsuario() {
-    if (this.usuarioActual) {
-      // Encuentra el índice del usuario en la lista
-      const index = this.usuarios.findIndex(user => user.id === this.usuarioActual.id);
-      if (index > -1) {
-        // Elimina el usuario de la lista
-        this.usuarios.splice(index, 1);
-        console.log('Usuario eliminado');
-      }
-    }
-    this.modal.dismiss(null, 'eliminar');
+  // Validar teléfono con el formato +56 seguido de 9 dígitos
+  validarTelefono(telefono: string): boolean {
+    const regexTelefono = /^\+56\d{9}$/; // +56 seguido de 9 dígitos
+    return regexTelefono.test(telefono);
   }
-
-
-  // Manejar el cierre del modal y ejecutar la acción correspondiente
-  onWillDismiss(event: Event) {
-    const ev = event as CustomEvent<OverlayEventDetail<any>>;
-
-    if (ev.detail.role === 'confirm') {
-      const data = ev.detail.data;
-      if (data && !this.usuarioActual) {
-        // Solo mostrar el mensaje si es un nuevo usuario (para evitar duplicados)
-        this.message = `Nuevo empleado agregado: ${data.nombre}`;
-      } else {
-        this.message = `Usuario guardado: ${data.nombre}`;
-      }
-    } else if (ev.detail.role === 'eliminar') {
-      this.message = 'Usuario eliminado.';
-    }
-  }
-
 }
