@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import { getStorage, ref } from 'firebase/storage';
 import { AngularFireStorage } from '@angular/fire/compat/storage'; // Asegúrate de tener esta importación
+import { finalize } from 'rxjs/operators';
 
 
 @Injectable({
@@ -22,6 +23,33 @@ export class BaseDatosService {
     return this.firestore.collection('Productos').valueChanges();
   }
 
+  // Función para agregar un producto a la base de datos
+  agregarProducto(producto: any, archivo: File): Promise<void> {
+    const storagePath = `productos_imagenes/${producto.nombreProducto}`;
+    const fileRef = this.storage.ref(storagePath);
+    const uploadTask = this.storage.upload(storagePath, archivo);
+  
+    return new Promise((resolve, reject) => {
+      uploadTask.snapshotChanges().pipe(
+        finalize(() => {
+          fileRef.getDownloadURL().subscribe((url) => {
+            // Ahora que tenemos la URL de la imagen, la guardamos en Firestore
+            const productoRef = this.firestore.collection('Productos').doc(producto.nombreProducto.toUpperCase());
+            productoRef.set({
+              nombre: producto.nombreProducto,
+              descripcion: producto.descripcionProducto,
+              precioPequeno: producto.precioPequenoProducto,
+              precioGrande: producto.precioGrandeProducto,
+              disponible: producto.estadoProducto,
+              categoria: producto.categoria,
+              imagen: url  // Guardamos la URL de la imagen en Firestore
+            }).then(resolve).catch(reject);
+          });
+        })
+      ).subscribe();
+    });
+  }
+  
 
   // Método para agregar una nueva categoría
   agregarCategoria(categoria: any): Promise<void> {
@@ -65,8 +93,8 @@ export class BaseDatosService {
   }
 
 
-   // Método para subir imagen y obtener la URL
-   subirImagen(imagen: File): Promise<string> {
+  // Método para subir imagen y obtener la URL
+  subirImagen(imagen: File): Promise<string> {
     const filePath = `productos/${Date.now()}_${imagen.name}`; // Genera un nombre único para la imagen
     const storageRef = this.storage.ref(filePath);
     const uploadTask = storageRef.put(imagen); // Subir la imagen
@@ -133,7 +161,7 @@ export class BaseDatosService {
   // Método para actualizar el nombre de una categoría
   async actualizarProductoPorNombre(nombreProducto: string, actualizaciones: any): Promise<void> {
     const nombreLimpio = nombreProducto.trim();
-  
+
     return this.firestore.collection('Productos', ref => ref.where('nombre', '==', nombreLimpio))
       .get()
       .toPromise()
@@ -150,7 +178,7 @@ export class BaseDatosService {
         throw new Error('Error al actualizar el producto: ' + error.message);
       });
   }
-  
+
 
 
   getStorageRef(nombreArchivo: string) {

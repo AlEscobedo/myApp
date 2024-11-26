@@ -182,20 +182,45 @@ export class MenuListaComponent implements OnInit {
             this.presentToast('Ya existe un producto con este nombre.');
           } else {
             // Si el producto no existe, procede a crear el nuevo producto
-            this.modalCrearProducto.dismiss(
+            this.baseDatosService.agregarProducto(
               {
                 nombreProducto: this.crearNombreProducto,
                 descripcionProducto: this.crearDescripcionProducto,
                 precioPequenoProducto: this.crearPrecioPequenoProducto,
                 precioGrandeProducto: this.crearPrecioGrandeProducto,
                 estadoProducto: this.crearEstadoProducto,
-                categoria: this.crearCategoria,
+                categoria: this.crearCategoria
               },
-              'confirm'
-            );
+              this.crearImagen // Aquí pasas la imagen como el segundo parámetro
+            ).then(() => {
+              this.modalCrearProducto.dismiss(
+                {
+                  nombreProducto: this.crearNombreProducto,
+                  descripcionProducto: this.crearDescripcionProducto,
+                  precioPequenoProducto: this.crearPrecioPequenoProducto,
+                  precioGrandeProducto: this.crearPrecioGrandeProducto,
+                  estadoProducto: this.crearEstadoProducto,
+                  categoria: this.crearCategoria,
+                },
+                'confirm'
+              );
+              this.presentToast('Producto creado exitosamente');
+              // Limpiar los campos del modal
+              this.crearNombreProducto = '';
+              this.crearDescripcionProducto = '';
+              this.crearPrecioPequenoProducto = '';
+              this.crearPrecioGrandeProducto = '';
+              this.crearEstadoProducto = null;
+              this.crearCategoria = '';
+              this.crearImagen = null;  // Limpiar la imagen (si es necesario)
+            }).catch((error: any) => {
+              this.presentToast('Error al crear el producto: ' + error.message);
+            });
           }
         });
         break;
+
+
 
 
 
@@ -272,15 +297,15 @@ export class MenuListaComponent implements OnInit {
   }
 
   verificarCamposVacios(): boolean {
-    // Validación de la imagen
-    if (!this.crearImagen) {
-      this.presentToast('La imagen es obligatoria.');
-      return false;
-    }
-
     // Validación del nombre del producto
     if (!this.crearNombreProducto || !this.crearNombreProducto.trim()) {
       this.presentToast('El nombre del producto es obligatorio.');
+      return false;
+    }
+
+    // Validación de la imagen
+    if (!this.crearImagen) {
+      this.presentToast('La imagen es obligatoria.');
       return false;
     }
 
@@ -317,9 +342,9 @@ export class MenuListaComponent implements OnInit {
     }
 
     // Si todos los campos están completos, devuelve true
-    this.presentToast('Todos los campos están correctamente llenos.');
     return true;
   }
+
 
 
 
