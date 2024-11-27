@@ -95,7 +95,6 @@ export class MenuListaComponent implements OnInit {
       this.productos = data;
     });
 
-
   }
 
   // Cerrar el modal específico

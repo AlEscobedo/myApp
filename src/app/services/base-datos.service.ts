@@ -32,6 +32,13 @@ export class BaseDatosService {
     return this.firestore.collection('Cliente').valueChanges();
   }
 
+  obtenerPedidos(): Observable<any[]> {    
+    return this.firestore.collection('Pedidos').valueChanges();
+  }
+
+
+
+
   // Función para agregar un producto a la base de datos
   agregarProducto(producto: any, archivo: File): Promise<void> {
     const storagePath = `productos_imagenes/${producto.nombreProducto}`;
