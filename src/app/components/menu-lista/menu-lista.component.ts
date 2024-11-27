@@ -3,6 +3,8 @@ import { IonModal, AlertController, ToastController, ModalController } from '@io
 import { OverlayEventDetail } from '@ionic/core/components';
 import { BaseDatosService } from 'src/app/services/base-datos.service';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { take } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-menu-lista',
@@ -90,7 +92,7 @@ export class MenuListaComponent implements OnInit {
 
     // Cargar los productos desde la base de datos al inicializar el componente
     this.baseDatosService.obtenerProductos().subscribe((data) => {
-      this.productos = data;      
+      this.productos = data;
     });
 
 
@@ -175,15 +177,17 @@ export class MenuListaComponent implements OnInit {
           return; // Detiene el proceso si algún campo está vacío
         }
 
-        // Verifica si el nombre del producto ya existe
-        const nombreProductoNormalizado = this.crearNombreProducto.trim().toUpperCase(); // Normaliza el nombre del producto a mayúsculas
-        this.baseDatosService.obtenerProductos().subscribe((productos) => {
-          const productoExistente = this.baseDatosService.productoYaExiste(nombreProductoNormalizado, productos);
+        // Normaliza el nombre del producto
+        const nombreProductoNormalizado = this.crearNombreProducto.trim().toUpperCase();
 
-          if (productoExistente) {
+        // Llama a obtenerProductos y toma solo la primera emisión
+        this.baseDatosService.obtenerProductos().pipe(take(1)).subscribe((productos) => {
+          const existe = this.baseDatosService.productoYaExiste(nombreProductoNormalizado, productos);
+
+          if (existe) {
             this.presentToast('Ya existe un producto con este nombre.');
           } else {
-            // Si el producto no existe, procede a crear el nuevo producto
+            // Procede a crear el nuevo producto
             this.baseDatosService.agregarProducto(
               {
                 nombreProducto: this.crearNombreProducto,
@@ -222,9 +226,6 @@ export class MenuListaComponent implements OnInit {
           }
         });
         break;
-
-
-
 
 
       case 'crearCategoria':
@@ -448,7 +449,7 @@ export class MenuListaComponent implements OnInit {
 
       // Restablecer los campos
       this.nuevoNombreProducto = '';
-      this.nuevaDescripcionProducto = '';      
+      this.nuevaDescripcionProducto = '';
       this.nuevoPrecioPequenoProducto = null;
       this.nuevoPrecioGrandeProducto = null;
       this.nuevoEstadoProducto = null;
