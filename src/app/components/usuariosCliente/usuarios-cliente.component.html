@@ -1,95 +1,147 @@
 <ion-content class="container colorFondo">
   <ion-card class="colorTarjeta">
     <ion-card-header>
-      <ion-card-title>Usuarios Clientes</ion-card-title>
-      <ion-card-subtitle>Aqui puedes ver a todos tus clienes, editar su información respectiva y/o
+      <ion-card-title>Usuarios </ion-card-title>
+      <ion-card-subtitle>Aquí puedes ver a todos tus empleados, agregar uno nuevo, editar su información y/o
         eliminarlos</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
 
-      <ion-card (click)="abrirModalNuevoCliente()">
+      <!-- Botón para agregar nuevo empleado -->
+      <ion-card>
         <ion-card-header>
-          <ion-card-title>Agregar a Nuevo Cliente</ion-card-title>
+          <ion-card-title>Agregar a Nuevo Empleado</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-item>
-            <ion-icon name="add-circle-outline" slot="start" color="success" size="large"></ion-icon>
-            <ion-label>Añadir un nuevo cliente</ion-label>
-          </ion-item>
+          <ion-button id="open-create-product-modal" expand="block" class="button-coffee"
+            (click)="abrirModalNuevoEmpleado()">
+            Crear Empleado
+          </ion-button>
         </ion-card-content>
       </ion-card>
 
+
+      <!-- Lista de empleados -->
       <ion-list>
         <ion-item *ngFor="let usuario of usuarios">
-          <ion-thumbnail slot="start">
-            <img [alt]="usuario.nombre" [src]="usuario.imagen" />
-          </ion-thumbnail>
-          <ion-label>{{ usuario.nombre }}</ion-label>
-          <ion-buttons slot="end">
-            <ion-button (click)="abrirModal(usuario)" color="primary">
+
+          <!-- Información del usuario -->
+          <ion-label>
+            <h2>{{ usuario.Nombres }} {{ usuario.Apellidos }}</h2>
+            <p>Rut: {{ usuario.rut }}</p>
+            <p>Email: {{ usuario.Email }}</p>
+            <p>Teléfono: {{ usuario.Telefono }}</p>
+            <p>Rol: {{ usuario.rol }}</p>
+          </ion-label>
+
+          <!-- Contenedor de botones (uno arriba del otro) -->
+          <ion-buttons slot="end" style="flex-direction: column;">            
+            <!-- Botón para editar -->
+            <ion-button color="primary" (click)="abrirModalEdicion(usuario)">
               <ion-icon slot="icon-only" name="create-outline"></ion-icon>
             </ion-button>
+
+            <!-- Nuevo botón (arriba del botón de editar) -->
+            <ion-button color="danger" (click)="eliminarUsuario(usuario)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>            
           </ion-buttons>
         </ion-item>
       </ion-list>
-      
     </ion-card-content>
   </ion-card>
 
-  <ion-modal (willDismiss)="onWillDismiss($event)">
+  <!-- Modal para crear un producto -->
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button (click)="cancel()">Salir</ion-button>
+            <ion-button (click)="closeModal()">Salir</ion-button>
           </ion-buttons>
-          <ion-title class="centered-title">
-            {{ esEdicion ? 'Ajuste Usuario' : 'Crear Usuario' }}
-          </ion-title>
+          <ion-title class="centered-title">Crear Usuario</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="confirm()" [strong]="true">Guardar</ion-button>
+            <ion-button (click)="crearUsuario()" [strong]="true">Guardar</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
+
       <ion-content class="ion-padding">
-
         <ion-item>
-          <input type="file" (change)="onFileSelected($event)" accept="image/*" />
-        </ion-item>
-
-        <!-- Vista previa de la imagen seleccionada -->
-        <ion-item *ngIf="imagenPreview">
-          <ion-thumbnail slot="start">
-            <img [src]="imagenPreview" alt="Vista previa de la imagen" />
-          </ion-thumbnail>
+          <ion-label position="floating"></ion-label>
+          <ion-input placeholder="Nombres" type="text" [(ngModel)]="nuevoEmpleadoNombre" name="nombres" required></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-input label="RUT" labelPlacement="stacked" type="text" placeholder="12.345.678-9" [(ngModel)]="rut"
-            [readonly]="usuarioActual" [ngClass]="{'input-error': !validarRut(rut) && rut}">
-          </ion-input>
+          <ion-label position="floating"></ion-label>
+          <ion-input placeholder="Apellidos" type="text" [(ngModel)]="nuevoEmpleadoApellido" name="apellidos" required></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-input label="Nombre Completo" labelPlacement="stacked" type="text" placeholder="Jon Doe"
-            [(ngModel)]="nombre"></ion-input>
+          <ion-label position="floating"></ion-label>
+          <ion-input placeholder="Rut sin puntos y con guion: 12345678-3" type="text" [(ngModel)]="nuevoEmpleadoRut" name="rut" required></ion-input>
         </ion-item>
+
         <ion-item>
-          <ion-input label="Cantidad de Compras Realizadas" labelPlacement="stacked" type="number"
-            [(ngModel)]="cantidadCompras" [value]="0" readonly></ion-input>
+          <ion-label position="floating"></ion-label>
+          <ion-input placeholder="Ingrese los 8 digitos" type="tel" [(ngModel)]="nuevoEmpleadoTelefono" name="telefono" required></ion-input>
         </ion-item>
+
         <ion-item>
-          <ion-input label="Cliente Activo Desde" labelPlacement="stacked" type="date"
-            [(ngModel)]="fechaRegistroString" [value]="fechaRegistroString" readonly></ion-input>
+          <ion-label position="floating"></ion-label>
+          <ion-input placeholder="Email: ejemplo@ejemplo.cl" type="email" [(ngModel)]="nuevoEmpleadoEmail" name="email" required></ion-input>
         </ion-item>
-        <div class="ion-margin-top">
-          <ion-button expand="block" color="danger" (click)="delete()" *ngIf="usuarioActual">
-            Eliminar Usuario
-          </ion-button>
-        </div>
       </ion-content>
     </ng-template>
   </ion-modal>
 
+  <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="closeEditModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="closeEditModal()">Salir</ion-button>
+          </ion-buttons>
+          <ion-title class="centered-title">Editar Usuario</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="guardarEdicion()" [strong]="true">Guardar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+  
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-label position="floating">Nombres</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Nombres" name="nombres" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="floating">Apellidos</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Apellidos" name="apellidos" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="floating">Teléfono</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Telefono" name="telefono" required></ion-input>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input [(ngModel)]="usuarioEditado.Email" name="email" required></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Tipo</ion-label>
+          <ion-select [(ngModel)]="usuarioEditado.rol" name="rol" required>
+            <ion-select-option value="Empleado">Empleado</ion-select-option>
+            <ion-select-option value="Admin">Admin</ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+  
 
 </ion-content>

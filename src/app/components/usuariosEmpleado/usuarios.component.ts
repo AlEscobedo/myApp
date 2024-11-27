@@ -42,7 +42,11 @@ export class UsuariosComponent implements OnInit {
   }
   abrirModalEdicion(usuario: any) {
     this.usuarioEditadoOriginal = { ...usuario };  // Guardar los datos originales
-    this.usuarioEditado = { ...usuario };  // Copiar los datos del usuario para editarlos    
+    const prefijo = '+569 ';
+    this.usuarioEditado = {
+      ...usuario,
+      Telefono: usuario.Telefono.startsWith(prefijo) ? usuario.Telefono.slice(prefijo.length) : usuario.Telefono
+  };
     this.isEditModalOpen = true;
   }
   
@@ -64,6 +68,7 @@ export class UsuariosComponent implements OnInit {
     return rut.trim().replace(/\./g, '').replace('-', ''); // Elimina puntos y guion
   }
 
+  
   async guardarEdicion() {
     try {
       // Verificar si hubo algún cambio en los campos
@@ -79,10 +84,15 @@ export class UsuariosComponent implements OnInit {
       }
   
       // Validar teléfono
+      const prefijo = '+569 ';
+      const telefonoCompleto = prefijo + this.usuarioEditado.Telefono;
+
       if (!this.validarTelefono(this.usuarioEditado.Telefono)) {
         await this.mostrarMensaje('Error', 'El número de teléfono debe contener 8 dígitos.');
         return;
       }
+
+      this.usuarioEditado.Telefono = telefonoCompleto;
   
       // Validar email
       if (!this.validarEmail(this.usuarioEditado.Email)) {
@@ -185,16 +195,18 @@ export class UsuariosComponent implements OnInit {
       await this.mostrarMensaje('Error', 'El EMAIL ingresado no es válido.');
       return;
     }
-
-    // Guardar usuario en la base de datos (código para guardar el usuario aquí)
+    const inicio = '+569 '; 
+    const telefonoCompleto = inicio + this.nuevoEmpleadoTelefono;  
     const usuario = {
       Nombres: this.nuevoEmpleadoNombre,
       Apellidos: this.nuevoEmpleadoApellido,
       rut: this.nuevoEmpleadoRut,
-      Telefono: this.nuevoEmpleadoTelefono,
+      Telefono: telefonoCompleto,
       Email: this.nuevoEmpleadoEmail,
       rol: 'Empleado'
     }
+    console.log('Valor de nuevoEmpleadoTelefono:', this.nuevoEmpleadoTelefono);
+
     // Guardar el usuario en la base de datos
     try {
       await this.baseDatosService.agregarUsuario(usuario);
