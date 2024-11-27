@@ -90,7 +90,7 @@ export class MenuListaComponent implements OnInit {
 
     // Cargar los productos desde la base de datos al inicializar el componente
     this.baseDatosService.obtenerProductos().subscribe((data) => {
-      this.productos = data;
+      this.productos = data;      
     });
 
 
@@ -119,7 +119,6 @@ export class MenuListaComponent implements OnInit {
         this.nombreNuevaSubCategoria = '';
         break;
       case 'crearProducto':
-        this.modalCrearProducto.dismiss(null, 'cancel');
         this.crearNombreProducto = null;
         this.crearDescripcionProducto = null;
         this.crearPrecioPequenoProducto = null;
@@ -127,6 +126,9 @@ export class MenuListaComponent implements OnInit {
         this.crearEstadoProducto = null;
         this.crearCategoria = null;
         this.catSeleccionada = null;
+        this.nuevaImagen = null; // Limpiar la imagen seleccionada
+        this.nuevaImagenPreview = null; // Limpiar la vista previa de la imagen
+        this.modalCrearProducto.dismiss(null, 'cancel');
 
         break;
       case 'crearCategoria':
@@ -212,7 +214,8 @@ export class MenuListaComponent implements OnInit {
               this.crearPrecioGrandeProducto = '';
               this.crearEstadoProducto = null;
               this.crearCategoria = '';
-              this.crearImagen = null;  // Limpiar la imagen (si es necesario)
+              this.nuevaImagen = null; // Limpiar la imagen seleccionada
+              this.nuevaImagenPreview = null; // Limpiar la vista previa de la imagen
             }).catch((error: any) => {
               this.presentToast('Error al crear el producto: ' + error.message);
             });
@@ -445,8 +448,7 @@ export class MenuListaComponent implements OnInit {
 
       // Restablecer los campos
       this.nuevoNombreProducto = '';
-      this.nuevaDescripcionProducto = '';
-      this.nuevaImagen = null;
+      this.nuevaDescripcionProducto = '';      
       this.nuevoPrecioPequenoProducto = null;
       this.nuevoPrecioGrandeProducto = null;
       this.nuevoEstadoProducto = null;
