@@ -23,12 +23,12 @@ export class UsuariosComponent implements OnInit {
   ngOnInit() {
     this.baseDatosService.obtenerUsuarios().subscribe((data) => {
       // Filtrar los usuarios con rol "Empleado"
-      this.usuarios = data.filter((usuario: any) => usuario.rol === 'Empleado');
+      this.usuarios = data;
     });
   }
 
   isModalOpen = false;
-  isEditModalOpen = false; 
+  isEditModalOpen = false;
 
   nuevoEmpleadoNombre = '';
   nuevoEmpleadoApellido = '';
@@ -46,11 +46,11 @@ export class UsuariosComponent implements OnInit {
     this.usuarioEditado = {
       ...usuario,
       Telefono: usuario.Telefono.startsWith(prefijo) ? usuario.Telefono.slice(prefijo.length) : usuario.Telefono
-  };
+    };
     this.isEditModalOpen = true;
   }
-  
-  
+
+
 
   closeEditModal() {
     this.isEditModalOpen = false;
@@ -68,7 +68,7 @@ export class UsuariosComponent implements OnInit {
     return rut.trim().replace(/\./g, '').replace('-', ''); // Elimina puntos y guion
   }
 
-  
+
   async guardarEdicion() {
     try {
       // Verificar si hubo algún cambio en los campos
@@ -79,10 +79,10 @@ export class UsuariosComponent implements OnInit {
         this.usuarioEditado.Email === this.usuarioEditadoOriginal.Email &&
         this.usuarioEditado.rol === this.usuarioEditadoOriginal.rol
       ) {
-        await this.mostrarMensaje('Sin cambios', 'No se realizaron cambios en los datos del usuario.');        
+        await this.mostrarMensaje('Sin cambios', 'No se realizaron cambios en los datos del usuario.');
         return;
       }
-  
+
       // Validar teléfono
       const prefijo = '+569 ';
       const telefonoCompleto = prefijo + this.usuarioEditado.Telefono;
@@ -93,13 +93,13 @@ export class UsuariosComponent implements OnInit {
       }
 
       this.usuarioEditado.Telefono = telefonoCompleto;
-  
+
       // Validar email
       if (!this.validarEmail(this.usuarioEditado.Email)) {
         await this.mostrarMensaje('Error', 'El EMAIL ingresado no es válido.');
         return;
       }
-  
+
       // Si hubo cambios y las validaciones son correctas, llamamos al servicio para actualizar los datos
       await this.baseDatosService.actualizarUsuario(this.usuarioEditado);
       await this.mostrarMensaje('Éxito', 'Usuario actualizado exitosamente.');
@@ -109,13 +109,13 @@ export class UsuariosComponent implements OnInit {
       await this.mostrarMensaje('Error', 'Hubo un problema al actualizar el usuario.');
     }
   }
-  
-  
-  
+
+
+
 
   //Metodo para eliminar usuario
-   // Función para eliminar el usuario
-   async eliminarUsuario(usuario: any) {
+  // Función para eliminar el usuario
+  async eliminarUsuario(usuario: any) {
     const confirmAlert = await this.alertController.create({
       header: 'Confirmar',
       message: '¿Estás seguro de que deseas eliminar este usuario?' + usuario.Nombres + ' ' + usuario.rut,
@@ -195,8 +195,8 @@ export class UsuariosComponent implements OnInit {
       await this.mostrarMensaje('Error', 'El EMAIL ingresado no es válido.');
       return;
     }
-    const inicio = '+569 '; 
-    const telefonoCompleto = inicio + this.nuevoEmpleadoTelefono;  
+    const inicio = '+569 ';
+    const telefonoCompleto = inicio + this.nuevoEmpleadoTelefono;
     const usuario = {
       Nombres: this.nuevoEmpleadoNombre,
       Apellidos: this.nuevoEmpleadoApellido,
@@ -298,5 +298,5 @@ export class UsuariosComponent implements OnInit {
     const regexTelefono = /^\d{8}$/;  // Solo 9 dígitos
     return regexTelefono.test(telefono);
   }
-  
+
 }

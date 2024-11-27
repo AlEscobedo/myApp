@@ -28,6 +28,10 @@ export class BaseDatosService {
     return this.firestore.collection('Usuario').valueChanges();
   }
 
+  obtenerClientes(): Observable<any[]> {
+    return this.firestore.collection('Cliente').valueChanges();
+  }
+
   // Función para agregar un producto a la base de datos
   agregarProducto(producto: any, archivo: File): Promise<void> {
     const storagePath = `productos_imagenes/${producto.nombreProducto}`;
@@ -77,6 +81,22 @@ export class BaseDatosService {
         }
       });
   }
+
+  eliminarUsuarioPorRutCliente(rut: string): Promise<void> {
+    return this.firestore
+      .collection('Cliente', ref => ref.where('rut', '==', rut))
+      .get()
+      .toPromise()
+      .then((querySnapshot) => {
+        if (querySnapshot && !querySnapshot.empty) {
+          // Si encontramos el documento con ese RUT, lo eliminamos
+          const docId = querySnapshot.docs[0].id;
+          return this.firestore.collection('Cliente').doc(docId).delete();
+        } else {
+          throw new Error('Usuario no encontrado');
+        }
+      });
+  }
   
   
   async actualizarUsuario(usuario: any): Promise<void> {
@@ -111,20 +131,17 @@ export class BaseDatosService {
     }
   }
   
-  
-  
-  
-  
-  
-  
-  
-  
-
 
   // Método para agregar un nuevo usuario
   agregarUsuario(usuario: any): Promise<void> {
     const id = this.firestore.createId(); // Crea un ID único para el nuevo usuario
     return this.firestore.collection('Usuario').doc(id).set(usuario);
+  }
+
+  // Método para agregar un nuevo usuario
+  agregarUsuarioCliente(usuario: any): Promise<void> {
+    const id = this.firestore.createId(); // Crea un ID único para el nuevo usuario
+    return this.firestore.collection('Cliente').doc(id).set(usuario);
   }
 
   eliminarProductoPorNombre(nombreProducto: string): Promise<void> {
@@ -208,6 +225,15 @@ export class BaseDatosService {
   async rutYaExiste(rut: string): Promise<boolean> {    
     const query = this.firestore
       .collection('Usuario', ref => ref.where('rut', '==', rut))
+      .get();
+
+    const snapshot = await firstValueFrom(query);
+    return snapshot && !snapshot.empty; // Retorna `true` si se encontró al menos un documento.
+  }
+
+  async rutYaExisteCliente(rut: string): Promise<boolean> {    
+    const query = this.firestore
+      .collection('Cliente', ref => ref.where('rut', '==', rut))
       .get();
 
     const snapshot = await firstValueFrom(query);
