@@ -135,10 +135,20 @@ export class UsuariosClienteComponent implements OnInit {
       return;
     }
 
+    // Obtener la fecha actual en el formato requerido
+    const fechaRegistro = new Date();
+    const fechaFormateada = fechaRegistro.toLocaleString('es-CL', {
+      weekday: 'long', // Día de la semana (miércoles, jueves, etc.)
+      year: 'numeric',
+      month: 'long',  // Mes completo (noviembre, enero, etc.)
+      day: 'numeric', // Día del mes
+    });
+
     const usuario = {
       Nombre: this.nuevoClienteNombre,
       rut: this.nuevoClienteRut,
-      rol: 'Cliente'
+      rol: 'Cliente',
+      FechaRegistro: fechaFormateada,
     }
 
     // Guardar el usuario en la base de datos
@@ -168,7 +178,7 @@ export class UsuariosClienteComponent implements OnInit {
     await alert.present();
   }
 
-validarRut(rut: string): boolean {
+  validarRut(rut: string): boolean {
     // Eliminar espacios en blanco al principio y al final
     const rutTrim = rut.trim();
 
@@ -190,7 +200,7 @@ validarRut(rut: string): boolean {
 
     return true;
   }
-  
+
   validarDigitoVerificador(cuerpo: string, dv: string): boolean {
     let suma = 0;
     let multiplo = 2;
