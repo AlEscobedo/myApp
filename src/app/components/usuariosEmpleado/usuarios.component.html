@@ -59,7 +59,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="closeModal()">Salir</ion-button>
           </ion-buttons>
-          <ion-title class="centered-title">Crear Usuario</ion-title>
+          <ion-title class="centered-title">Crear Empleado</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="crearUsuario()" [strong]="true">Guardar</ion-button>
           </ion-buttons>
@@ -102,7 +102,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="closeEditModal()">Salir</ion-button>
           </ion-buttons>
-          <ion-title class="centered-title">Editar Usuario</ion-title>
+          <ion-title class="centered-title">Editar {{usuarioEditado.Nombres}}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="guardarEdicion()" [strong]="true">Guardar</ion-button>
           </ion-buttons>

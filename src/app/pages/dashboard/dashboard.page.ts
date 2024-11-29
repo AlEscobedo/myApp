@@ -204,7 +204,7 @@ export class DashboardPage implements OnInit {
               weight: 'bold',
             },
             formatter: (value) => value,
-            offset: -50,  // Ajusta el offset para mayor espacio
+            offset: -20,  // Ajusta el offset para mayor espacio
             
           }
         }
@@ -235,14 +235,14 @@ export class DashboardPage implements OnInit {
             position: 'top',
           },
           datalabels: { // Agregar el plugin de data labels
-            color: 'white',
+            color: 'black',
             anchor: 'end',
             align: 'top',
             font: {
               weight: 'bold',
             },
             formatter: (value) => value, // Mostrar el valor dentro de las barras
-             offset: -50,
+             offset: -20,
           }
         },
         scales: {

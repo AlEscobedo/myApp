@@ -36,7 +36,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('crearProducto')">Salir</ion-button>
           </ion-buttons>
-          <ion-title class="centered-title">Crear Nuevo Producto</ion-title>
+          <ion-title class="centered-title">Crear Producto</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm('crearProducto')" [strong]="true">Guardar</ion-button>
           </ion-buttons>
@@ -122,7 +122,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('crearCategoria')">Salir</ion-button>
           </ion-buttons>
-          <ion-title class="centered-title">Crear Nueva Categoría</ion-title>
+          <ion-title class="centered-title">Crear Categoría</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm('crearCategoria')" [strong]="true">Guardar</ion-button>
           </ion-buttons>
@@ -146,7 +146,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('crearSubCategoria')">Salir</ion-button>
           </ion-buttons>
-          <ion-title class="centered-title">Crear Nueva SubCategoría</ion-title>
+          <ion-title class="centered-title">Crear SubCategoría</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="confirm('crearSubCategoria')" [strong]="true">Guardar</ion-button>
           </ion-buttons>
@@ -236,7 +236,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('categoria')">Salir</ion-button>
           </ion-buttons>
-          <ion-title>Detalles de la Categoría</ion-title>
+          <ion-title class="centered-title">{{nombreCategoria}}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="actualizarCategoria()" [strong]="true">Guardar</ion-button>
           </ion-buttons>
@@ -265,7 +265,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('subCategoria')">Salir</ion-button>
           </ion-buttons>
-          <ion-title>Detalles de la Subcategoría</ion-title>
+          <ion-title class="centered-title">{{nombreSubCategoria}}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="actualizarSubCategoria(categoriaSeleccionada, nombreSubCategoria)"
               [strong]="true">Guardar</ion-button>
@@ -304,7 +304,7 @@
           <ion-buttons slot="start">
             <ion-button (click)="cancel('producto')">Salir</ion-button>
           </ion-buttons>
-          <ion-title class="centered-title">Detalles del Producto</ion-title>
+          <ion-title class="centered-title">{{nombreProducto}}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="actualizarProducto()" [strong]="true">Guardar</ion-button>
           </ion-buttons>
