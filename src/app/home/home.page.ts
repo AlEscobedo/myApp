@@ -20,12 +20,22 @@ export class HomePage implements OnInit {
     private afAuth: AngularFireAuth,
     private firestore: AngularFirestore,
     private alertController: AlertController
-  ) {}
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   // Método para iniciar sesión
   async login() {
+    if (!this.email?.trim()) {
+      this.showAlert('Error', 'Por favor, ingresa tu email.');
+      return;
+    }
+    if (!this.password?.trim()) {
+      this.showAlert('Error', 'Por favor, ingresa tu contraseña.');
+      this.password = '';
+      return;
+    }
     try {
       // Autenticación con Firebase Auth
       const userCredential = await this.afAuth.signInWithEmailAndPassword(
@@ -34,6 +44,7 @@ export class HomePage implements OnInit {
       );
 
       const email = userCredential.user?.email;
+
 
       if (email) {
         // Consultar Firestore para el rol del usuario
@@ -47,23 +58,37 @@ export class HomePage implements OnInit {
 
           // Redirigir según el rol
           if (userData.rol === 'Admin') {
+            this.password = '';
+            this.email = '';
             this.router.navigate(['/inicio-admin']); // Ruta para admin
           } else if (userData.rol === 'Empleado') {
             this.router.navigate(['/inicio-empleado']); // Ruta para empleado
           } else {
+            this.password = '';
             this.showAlert('Error', 'Rol no definido. Contacta al administrador.');
           }
         } else {
+          this.password = '';
           this.showAlert('Error', 'Usuario no encontrado en la base de datos.');
         }
       }
     } catch (error: any) {
-      console.error('Error al iniciar sesión:', error);
-      const errorMessage =
-        error?.message || 'Ocurrió un error al iniciar sesión. Inténtalo nuevamente.';
-      this.showAlert('Error', errorMessage);
+      this.password = '';
+      console.error('Error al iniciar sesión:', 'Usuario y/o contraseña Incorrectos');
+
+      // Manejo de error por contraseña incorrecta o datos mal formateados
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        this.password = '';
+        this.showAlert('Error', 'Usuario o contraseña incorrectos.');
+      } else {
+        this.password = '';
+        const errorMessage =
+          error?.message || 'Ocurrió un error al iniciar sesión. Inténtalo nuevamente.';
+        this.showAlert('Error', 'Usuario y/o contraseña Incorrectos');
+      }
     }
   }
+
 
   // Toggle para mostrar/ocultar la contraseña
   togglePasswordVisibility() {
