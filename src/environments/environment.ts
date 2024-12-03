@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   firebaseConfig: {
-    apiKey: "AIzaSyCINeY2-1H-oRsyAViEUf0aLG6B2Ggs64",
+    apiKey: "AIzaSyCIZNeY2-1H-oRsyAViEUf0aLG6B2Ggs64",
     authDomain: "cafeteria-sistema-anb.firebaseapp.com",
     projectId: "cafeteria-sistema-anb",
     storageBucket: "cafeteria-sistema-anb.appspot.com",

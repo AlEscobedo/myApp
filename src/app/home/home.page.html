@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true" class="colorFondo">
   <div class="container">
     <ion-card>
-      <img [src]="imageUrl" alt="Imagen de perfil"/>
+      <img src="../../assets/imagenes/sistemaANB.jpg" alt="Imagen de perfil"/>
       <ion-card-header>
         <ion-card-title>
           <h1>
@@ -14,7 +14,7 @@
       </ion-card-header>
       <ion-card-content>
         <ion-item class="ion-text-center">
-          <ion-input [(ngModel)]="username" placeholder="Nombre de Usuario"></ion-input>
+          <ion-input [(ngModel)]="email" placeholder="Email de Usuario"></ion-input>
         </ion-item>
         <br>
         <ion-item>
@@ -23,10 +23,10 @@
           <ion-icon [name]="passwordIcon" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
         </ion-item>
         <br>
-        <ion-card-subtitle>
+        <!-- <ion-card-subtitle>
           <ion-checkbox [(ngModel)]="rememberMe">Recordarme</ion-checkbox>
         </ion-card-subtitle>
-        <br>
+        <br> -->
         <ion-button color="dark" (click)="login()">
           Ingresar
         </ion-button>
