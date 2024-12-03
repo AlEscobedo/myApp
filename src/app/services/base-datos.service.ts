@@ -399,7 +399,7 @@ export class BaseDatosService {
     const nombreCategoriaMayusculas = nombreCategoria.toUpperCase(); // Insensibilidad a mayúsculas
     const subCategoriaActualMayusculas = subCategoriaActual.toUpperCase();
     const nuevoNombreSubCategoriaMayusculas = nuevoNombreSubCategoria.toUpperCase();
-
+  
     return this.firestore.collection('Categoria', ref =>
       ref.where('categoria', '==', nombreCategoriaMayusculas)
     )
@@ -410,30 +410,62 @@ export class BaseDatosService {
           const categoriaDoc = snapshot.docs[0]; // Obtener el primer documento de la categoría
           const categoria = categoriaDoc.data() as any; // Obtener los datos de la categoría
           const subcategorias: string[] = categoria['subcategorias'] || []; // Asegurarse de que subcategorias es un arreglo
-
+  
           // Encontrar el índice de la subcategoría actual
           const index = subcategorias.findIndex(subcategoria => subcategoria.toUpperCase() === subCategoriaActualMayusculas);
           if (index === -1) {
             throw new Error('La subcategoría no existe en esta categoría.');
           }
-
+  
           // Verificar si el nuevo nombre ya existe
           if (subcategorias.some(subcategoria => subcategoria.toUpperCase() === nuevoNombreSubCategoriaMayusculas)) {
             throw new Error('Ya existe una subcategoría con el nuevo nombre.');
           }
-
+  
           // Actualizar el nombre de la subcategoría
           subcategorias[index] = nuevoNombreSubCategoria;
-
-          // Guardar los cambios en Firestore
-          return categoriaDoc.ref.update({ subcategorias });
+  
+          // Guardar los cambios en Firestore en la colección "Categoria"
+          return categoriaDoc.ref.update({ subcategorias })
+            .then(() => {
+              // Ahora, actualizar todos los productos cuya categoría sea la subcategoría actual
+              return this.firestore.collection('Productos', ref =>
+                ref.where('categoria', '==', subCategoriaActual)
+              ).get().toPromise();
+            })
+            .then(productosSnapshot => {
+              if (productosSnapshot && !productosSnapshot.empty) {
+                // Actualizar todos los productos encontrados
+                const batch = this.firestore.firestore.batch();
+  
+                productosSnapshot.docs.forEach(productoDoc => {
+                  const productoRef = productoDoc.ref;
+                  batch.update(productoRef, { categoria: nuevoNombreSubCategoria });
+                });
+  
+                // Ejecutar el batch para actualizar todos los productos
+                return batch.commit();
+              }
+              return Promise.resolve();  // En caso de que no haya productos para actualizar
+            })
+            .then(() => {
+              console.log('Subcategoría y productos actualizados con éxito');
+              // Aquí puedes devolver una Promesa resuelta, para que el código funcione bien
+              return Promise.resolve();
+            })
+            .catch(error => {
+              console.error('Error al actualizar la subcategoría y los productos:', error);
+              return Promise.reject(error);  // Retornar el error en caso de que falle
+            });
         } else {
           throw new Error('No se encontró la categoría con ese nombre.');
         }
       })
       .catch(error => {
-        throw new Error('Error al actualizar la subcategoría: ' + error.message);
+        console.error('Error al actualizar la subcategoría:', error);
+        return Promise.reject(error);
       });
   }
+  
 
 }
