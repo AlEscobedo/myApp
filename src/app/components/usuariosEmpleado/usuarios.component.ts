@@ -36,6 +36,7 @@ export class UsuariosComponent implements OnInit {
   nuevoEmpleadoTelefono = '';
   nuevoEmpleadoEmail = '';
   nuevoEmpleadoRol = 'Empleado';
+  nuevoEmpleadoPassword = this.nuevoEmpleadoRut;
 
   abrirModalNuevoEmpleado() {
     this.isModalOpen = true;
