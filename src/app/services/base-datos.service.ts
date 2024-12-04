@@ -170,12 +170,21 @@ export class BaseDatosService {
   }
 
 
-  eliminarCategoriaPorNombre(nombreCategoria: string): Promise<void> {
+  eliminarCategoriaPorNombre(nombreCategoria: string): Promise<void> { 
     return this.firestore.collection('Categoria', ref => ref.where('categoria', '==', nombreCategoria))
       .get()
       .toPromise()
       .then(snapshot => {
-        if (snapshot && !snapshot.empty) {  // Verificación explícita de snapshot
+        if (snapshot && !snapshot.empty) { 
+          const doc = snapshot.docs[0]; // Obtiene el primer documento coincidente
+          const data = doc.data() as { subcategorias?: any[] }; // Especifica el tipo esperado
+  
+          // Verifica si el campo 'subcategorias' tiene datos
+          if (data.subcategorias && data.subcategorias.length > 0) {
+            throw new Error('La categoría contiene subcategorías y no puede ser eliminada');
+          }
+  
+          // Si no tiene subcategorías, procede a eliminar
           const batch = this.firestore.firestore.batch();
           snapshot.forEach(doc => {
             batch.delete(doc.ref);
@@ -186,6 +195,8 @@ export class BaseDatosService {
         }
       });
   }
+  
+  
 
 
   // Método para subir imagen y obtener la URL

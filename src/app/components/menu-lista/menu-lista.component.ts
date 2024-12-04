@@ -611,17 +611,29 @@ export class MenuListaComponent implements OnInit {
   // Acción para eliminar la categoría
   eliminarCategoria() {
     if (this.nombreCategoria) {
-      try {
-        this.baseDatosService.eliminarCategoriaPorNombre(this.nombreCategoria);
-        this.presentToast('Categoría eliminada correctamente');
-      } catch (error) {
-        console.error('Error al eliminar categoría:', error);
-        this.presentToast('Error al eliminar la categoría');
-      }
+      this.baseDatosService.eliminarCategoriaPorNombre(this.nombreCategoria)
+        .then(() => {
+          this.presentToast('Categoría eliminada correctamente');
+          this.modalCategoria.dismiss(null, 'eliminar');
+          this.nuevoNombre = ''; // Limpia el campo
+        })
+        .catch(async error => {
+          console.error('Error al eliminar categoría:', error);
+          await this.mostrarAlerta(error.message || 'Error al eliminar la categoría');
+        });
     }
-    this.modalCategoria.dismiss(null, 'eliminar');
-    this.nombreNuevaCategoria = ''; // Limpia el campo
   }
+  async mostrarAlerta(mensaje: string) {
+    const alert = await this.alertController.create({
+      header: 'Aviso',
+      message: mensaje,
+      buttons: ['OK'], // Botón de confirmación
+    });
+  
+    await alert.present();
+  }
+  
+  
 
   // Mostrar un mensaje emergente (toast) con un mensaje específico
   async presentToast(message: string) {
