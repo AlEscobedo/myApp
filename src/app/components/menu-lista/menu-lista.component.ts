@@ -643,6 +643,17 @@ export class MenuListaComponent implements OnInit {
       return;
     }
 
+    const nombreSubCategoriaMayusculas = this.nombreSubCategoriaSeleccionada.toUpperCase();
+    // Validar que no existan productos asociados a la subcategoría seleccionada
+    const productosAsociados = this.productos.some(producto =>
+      producto.categoria && producto.categoria.toUpperCase() === nombreSubCategoriaMayusculas
+    );
+
+    if (productosAsociados) {
+      this.presentAlert('No se puede eliminar esta subcategoría porque hay productos asociados a ella.');
+      return;
+    }
+
     // Llamamos al servicio para eliminar la subcategoría en Firestore
     this.baseDatosService.eliminarSubCategoria(this.categoriaSeleccionada, this.nombreSubCategoriaSeleccionada)
       .then(() => {
@@ -660,7 +671,16 @@ export class MenuListaComponent implements OnInit {
       });
   }
 
-
+  async presentAlert(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Error', // Título del mensaje
+      message: message,      // Mensaje que se mostrará
+      buttons: ['OK']        // Botón que cierra el mensaje
+    });
+  
+    await alert.present(); // Muestra el mensaje
+  }
+  
 
   // Manejar el cierre de los modales, mostrando el mensaje adecuado
   onWillDismiss(event: Event, modalType: string) {
