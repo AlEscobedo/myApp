@@ -118,6 +118,8 @@ export class MenuListaComponent implements OnInit {
       case 'subCategoria':
         this.modalSubCategoria.dismiss(null, 'cancel');
         this.nombreNuevaSubCategoria = '';
+        this.subcategoriaSeleccionada= '';
+        
         break;
       case 'crearProducto':
         this.crearNombreProducto = null;
