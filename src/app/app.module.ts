@@ -13,7 +13,7 @@ import { EditModalAjusteAdminModule } from './components/edit-modal-ajuste-admin
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import { environment } from '../environments/environment';
+import { firebaseConfig } from '../environments/environment';
 
 
 @NgModule({
@@ -23,7 +23,7 @@ import { environment } from '../environments/environment';
             AppRoutingModule,
             EditModalAjusteAdminModule,
             IonicStorageModule.forRoot(),
-            AngularFireModule.initializeApp(environment.firebaseConfig), // inicializa Firebase
+            AngularFireModule.initializeApp(firebaseConfig), // inicializa Firebase
             AngularFireAuthModule, // Modulo de autenticacion
             AngularFirestoreModule], // Modulo de bd firestore
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
