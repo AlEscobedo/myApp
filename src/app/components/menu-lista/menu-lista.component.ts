@@ -340,19 +340,22 @@ export class MenuListaComponent implements OnInit {
           // Dibuja la imagen redimensionada en el canvas
           ctx?.drawImage(img, 0, 0, width, height);
   
-          // Convierte la imagen redimensionada a un Data URL con la mayor compresión posible
+          // Obtener el tipo MIME original de la imagen
+          const mimeType = imagen.type || 'image/jpeg'; // Si no tiene tipo, se asigna 'image/jpeg' por defecto
+  
+          // Comprimir la imagen con el tipo MIME adecuado
           canvas.toBlob((blob) => {
             if (blob) {
-              // Crea un objeto File a partir del Blob
+              // Crea un objeto File a partir del Blob, manteniendo el tipo original
               const file = new File([blob], imagen.name, {
-                type: 'image/jpeg',
+                type: mimeType,
                 lastModified: new Date().getTime(),
               });
               resolve(file); // Devuelve la imagen comprimida
             } else {
               reject('Error al comprimir la imagen');
             }
-          }, 'image/jpeg', 0.2); // Comprime aún más con una calidad de 0.2
+          }, mimeType, 0.2); // Comprime con el tipo MIME original
         };
       };
       reader.onerror = (error) => {
@@ -361,6 +364,7 @@ export class MenuListaComponent implements OnInit {
       reader.readAsDataURL(imagen); // Lee la imagen seleccionada
     });
   }
+  
   
 
   verificarCamposVacios(): boolean {
