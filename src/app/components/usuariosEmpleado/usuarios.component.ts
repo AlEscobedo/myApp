@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonModal, AlertController } from '@ionic/angular';
 import { BaseDatosService } from 'src/app/services/base-datos.service';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-usuarios',
@@ -18,7 +19,8 @@ export class UsuariosComponent implements OnInit {
   usuarioEditadoOriginal: any = {};
 
   constructor(private alertController: AlertController,
-    private baseDatosService: BaseDatosService) { }
+              private baseDatosService: BaseDatosService,
+              private afAuth: AngularFireAuth,) { }
 
   ngOnInit() {
     this.baseDatosService.obtenerUsuarios().subscribe((data) => {
@@ -36,7 +38,7 @@ export class UsuariosComponent implements OnInit {
   nuevoEmpleadoTelefono = '';
   nuevoEmpleadoEmail = '';
   nuevoEmpleadoRol = 'Empleado';
-  nuevoEmpleadoPassword = this.nuevoEmpleadoRut;
+  
 
   abrirModalNuevoEmpleado() {
     this.isModalOpen = true;
@@ -198,6 +200,7 @@ export class UsuariosComponent implements OnInit {
     }
     const inicio = '+569 ';
     const telefonoCompleto = inicio + this.nuevoEmpleadoTelefono;
+    const pass = this.nuevoEmpleadoNombre;
     const usuario = {
       Nombres: this.nuevoEmpleadoNombre,
       Apellidos: this.nuevoEmpleadoApellido,
@@ -210,8 +213,18 @@ export class UsuariosComponent implements OnInit {
 
     // Guardar el usuario en la base de datos
     try {
+
+
+
       await this.baseDatosService.agregarUsuario(usuario);
       await this.mostrarMensaje('Éxito', 'El usuario ' + this.nuevoEmpleadoNombre + ' ' + this.nuevoEmpleadoApellido + ' se ha creado exitosamente.');
+      console.log(pass);
+      
+      const userCredential = await this.afAuth.createUserWithEmailAndPassword(
+        this.nuevoEmpleadoEmail.trim(),
+        pass.trim()
+      );
+
       this.nuevoEmpleadoNombre = '';
       this.nuevoEmpleadoApellido = '';
       this.nuevoEmpleadoRut = '';

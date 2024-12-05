@@ -62,7 +62,9 @@ export class HomePage implements OnInit {
             this.email = '';
             this.router.navigate(['/inicio-admin']); // Ruta para admin
           } else if (userData.rol === 'Empleado') {
-            this.router.navigate(['/inicio-empleado']); // Ruta para empleado
+            //this.router.navigate(['/inicio-empleado']); // Ruta para empleado
+            this.password = '';
+            this.showAlert('Error', 'Usuarios Empleado no pueden utilizar la app.');
           } else {
             this.password = '';
             this.showAlert('Error', 'Rol no definido. Contacta al administrador.');
