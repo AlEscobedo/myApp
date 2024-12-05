@@ -200,7 +200,7 @@ export class UsuariosComponent implements OnInit {
     }
     const inicio = '+569 ';
     const telefonoCompleto = inicio + this.nuevoEmpleadoTelefono;
-    const pass = this.nuevoEmpleadoNombre;
+    const pass = this.nuevoEmpleadoNombre + this.nuevoEmpleadoRut;
     const usuario = {
       Nombres: this.nuevoEmpleadoNombre,
       Apellidos: this.nuevoEmpleadoApellido,
