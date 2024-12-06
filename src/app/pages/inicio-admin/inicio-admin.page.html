@@ -1,22 +1,22 @@
 <ion-menu contentId="main-content">
   <ion-header>
     <ion-toolbar>
-      <ion-title>¿Que quieres hacer?</ion-title>
+      <ion-title>¿Qué quieres hacer?</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding colorFondo">
     <ion-list [inset]="true">
       <ion-item [button]="true" (click)="IrUsuariosAdmin()">
         <ion-icon color="warning" slot="start" name="person" size="large"></ion-icon>
-        <ion-label>Usuarios</ion-label>
+        <ion-label>Ver Usuarios</ion-label>
       </ion-item>
       <ion-item [button]="true" (click)="IrMenuAdmin()">
         <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
-        <ion-label>Menu</ion-label>
+        <ion-label>Ver Menú</ion-label>
       </ion-item>
       <ion-item [button]="true" (click)="IrDashboard()">
         <ion-icon color="success" slot="start" name="book" size="large"></ion-icon>
-        <ion-label>Dashboards</ion-label>
+        <ion-label>Ver Dashboards</ion-label>
       </ion-item>
       <!-- <ion-item [button]="true" (click)="IrAjusteAdmin()">
         <ion-icon color="white" slot="start" name="settings" size="large"></ion-icon>
@@ -54,8 +54,8 @@
           </div>
         </ion-card-title>
         <ion-card-subtitle class="ion-text-center">
-          Aqui encontraras a los usuarios de tipo empleado y los permisos que les puedes otorgar dentro de la
-          aplicación, tambien encontraras a los clientes registrados en el sistema</ion-card-subtitle>
+          Aquí encontrarás a los usuarios de tipo empleado y los permisos que les puedes otorgar dentro de la
+          aplicación, también encontrarás a los clientes registrados en el sistema</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <div class="centrar">
@@ -74,20 +74,20 @@
             <ion-item>
               <ion-icon color="tertiary" slot="start" name="list-circle" size="large"></ion-icon>
               <h1>
-                Menu
+                Menú
               </h1>
             </ion-item>
           </div>
         </ion-card-title>
         <ion-card-subtitle class="ion-text-center">
-          Aqui puedes ver el menu, las categorias y proctudos dentro de las mismas,
-          tambien podras agregar, modificar y/o eliminar productos y categorias</ion-card-subtitle>
+          Aquí puedes ver el menú, las categorías y productos dentro de las mismas,
+          también podrás agregar, modificar y/o eliminar productos y categorías</ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
         <div class="centrar">
           <ion-button [routerLink]="['/menu-admin']" color="tertiary" shape="round">
-            <p>Ir al Menu</p>
+            <p>Ir al Menú</p>
           </ion-button>
         </div>
       </ion-card-content>
@@ -106,7 +106,7 @@
           </div>
         </ion-card-title>
         <ion-card-subtitle class="ion-text-center">
-          Aqui podrás ver las cantidades de ventas diarias, semanales y mensuales de la tienda</ion-card-subtitle>
+          Aquí podrás ver el producto más vendido y el total de los productos vendidos</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <div class="centrar">

@@ -1,10 +1,10 @@
 <ion-content class="container colorFondo">
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Menú <br> Categorias y Productos</ion-card-title>
+      <ion-card-title>Menú <br> Categorías y Productos</ion-card-title>
       <ion-card-subtitle>
-        Aqui puedes ver el menu, las categorias y productos dentro de las mismas,
-        tambien podras agregar, modificar y/o eliminar productos y categorias
+        Aquí puedes ver el menú, las categorías y productos dentro de las mismas,
+        también podrás agregar, modificar y/o eliminar productos y categorías
       </ion-card-subtitle>
     </ion-card-header>
   </ion-card>
@@ -47,7 +47,7 @@
         <!-- Campo para editar el nombre del producto -->
         <ion-item>
           <ion-input label="Nombre Producto" labelPlacement="stacked" [(ngModel)]="crearNombreProducto"
-            placeholder="Escriba el nombre aqui" required>
+            placeholder="Escriba el nombre aquí" required>
           </ion-input>
         </ion-item>
 
@@ -68,14 +68,14 @@
 
         <!-- Campo para editar el precio pequeno del producto -->
         <ion-item>
-          <ion-input type="number" min="0" label="Precio Minimo" labelPlacement="stacked"
+          <ion-input type="number" min="0" label="Precio Mínimo" labelPlacement="stacked"
             [(ngModel)]="crearPrecioPequenoProducto" placeholder="$000.000" required>
           </ion-input>
         </ion-item>
 
         <!-- Campo para editar el precio grande del producto -->
         <ion-item>
-          <ion-input type="number" min="0" label="Nuevo Precio Maximo" labelPlacement="stacked"
+          <ion-input type="number" min="0" label="Nuevo Precio Máximo" labelPlacement="stacked"
             [(ngModel)]="crearPrecioGrandeProducto" placeholder="$000.000" required>
           </ion-input>
         </ion-item>
@@ -93,7 +93,7 @@
 
         <ion-item>
           <ion-label>Mover de Categoría</ion-label>
-          <ion-select placeholder="Escoger Categoria" [(ngModel)]="catSeleccionada" (ionChange)="cargarSubcategorias()">
+          <ion-select placeholder="Escoger Categoría" [(ngModel)]="catSeleccionada" (ionChange)="cargarSubcategorias()">
             <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">{{categoria.categoria}}</ion-select-option>
           </ion-select>
         </ion-item>
@@ -131,7 +131,7 @@
       <ion-content class="ion-padding">
         <ion-item>
           <ion-input label="Nombre de la Categoría" labelPlacement="stacked" type="text"
-            placeholder="Nombre para la nueva categoria" [(ngModel)]="nombreNuevaCategoria"></ion-input>
+            placeholder="Nombre para la nueva categoría" [(ngModel)]="nombreNuevaCategoria"></ion-input>
         </ion-item>
       </ion-content>
     </ng-template>
@@ -161,7 +161,7 @@
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-input label="Nombre de la SubCategoría" labelPlacement="stacked" type="text" placeholder="Ingrese nombre"
+          <ion-input label="Nombre de la SubCategoría" labelPlacement="stacked" type="text" placeholder="Ingrese nombre de la Subcategoría"
             [(ngModel)]="nombreNuevaSubCategoria"></ion-input>
         </ion-item>
       </ion-content>
@@ -249,7 +249,7 @@
         </ion-item>
         <div class="ion-margin-top">
           <ion-button expand="block" color="danger" (click)="delete('categoria')">
-            Eliminar Categoria
+            Eliminar CategorÍa
           </ion-button>
         </div>
       </ion-content>
@@ -329,21 +329,21 @@
 
         <!-- Campo para editar la descripcion del producto -->
         <ion-item>
-          <ion-textarea label="Nueva Descripcion" labelPlacement="stacked" [(ngModel)]="nuevaDescripcionProducto"
+          <ion-textarea label="Nueva Descripción" labelPlacement="stacked" [(ngModel)]="nuevaDescripcionProducto"
             placeholder="{{descripcionProducto}}" required auto-grow="true">
           </ion-textarea>
         </ion-item>
 
         <!-- Campo para editar el precio pequeno del producto -->
         <ion-item>
-          <ion-input type="number" min="0" label="Nuevo Precio Minimo" labelPlacement="stacked"
+          <ion-input type="number" min="0" label="Nuevo Precio Mínimo" labelPlacement="stacked"
             [(ngModel)]="nuevoPrecioPequenoProducto" placeholder="{{precioPequenoProducto | currency:'CLP'}}" required>
           </ion-input>
         </ion-item>
 
         <!-- Campo para editar el precio grande del producto -->
         <ion-item>
-          <ion-input type="number" min="0" label="Nuevo Precio Maximo" labelPlacement="stacked"
+          <ion-input type="number" min="0" label="Nuevo Precio Máximo" labelPlacement="stacked"
             [(ngModel)]="nuevoPrecioGrandeProducto" placeholder="{{precioGrandeProducto | currency:'CLP'}}" required>
           </ion-input>
         </ion-item>
@@ -361,7 +361,7 @@
 
         <ion-item>
           <ion-label>Mover de Categoría</ion-label>
-          <ion-select placeholder="Categorias" [(ngModel)]="catSeleccionada" (ionChange)="cargarSubcategorias()">
+          <ion-select placeholder="Categorías" [(ngModel)]="catSeleccionada" (ionChange)="cargarSubcategorias()">
             <ion-select-option *ngFor="let categoria of categorias" [value]="categoria">{{categoria.categoria}}</ion-select-option>
           </ion-select>
         </ion-item>

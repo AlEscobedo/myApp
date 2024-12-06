@@ -573,7 +573,7 @@ export class MenuListaComponent implements OnInit {
             .then(() => {
               console.log('Categoría actualizada con éxito');
               this.presentToast('Categoría actualizada correctamente');
-
+              this.nuevoNombre = '';
               // Cerrar el modal
               this.modalController.dismiss();
 
