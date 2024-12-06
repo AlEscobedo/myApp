@@ -118,8 +118,8 @@ export class MenuListaComponent implements OnInit {
       case 'subCategoria':
         this.modalSubCategoria.dismiss(null, 'cancel');
         this.nombreNuevaSubCategoria = '';
-        this.subcategoriaSeleccionada= '';
-        
+        this.subcategoriaSeleccionada = '';
+
         break;
       case 'crearProducto':
         this.crearNombreProducto = null;
@@ -173,65 +173,65 @@ export class MenuListaComponent implements OnInit {
         break;
       // Función para verificar si el nombre del producto ya existe antes de crear un nuevo producto
       case 'crearProducto':
-  // Verifica que los campos no estén vacíos
-  if (!this.verificarCamposVacios()) {
-    return; // Detiene el proceso si algún campo está vacío
-  }
+        // Verifica que los campos no estén vacíos
+        if (!this.verificarCamposVacios()) {
+          return; // Detiene el proceso si algún campo está vacío
+        }
 
-  // Normaliza el nombre del producto
-  const nombreProductoNormalizado = this.crearNombreProducto.trim().toUpperCase();
+        // Normaliza el nombre del producto
+        const nombreProductoNormalizado = this.crearNombreProducto.trim().toUpperCase();
 
-  // Llama a obtenerProductos y toma solo la primera emisión
-  this.baseDatosService.obtenerProductos().pipe(take(1)).subscribe((productos) => {
-    const existe = this.baseDatosService.productoYaExiste(nombreProductoNormalizado, productos);
+        // Llama a obtenerProductos y toma solo la primera emisión
+        this.baseDatosService.obtenerProductos().pipe(take(1)).subscribe((productos) => {
+          const existe = this.baseDatosService.productoYaExiste(nombreProductoNormalizado, productos);
 
-    if (existe) {
-      this.presentToast('Ya existe un producto con este nombre.');
-    } else {
-      // Comprime la imagen antes de enviarla
-      this.comprimirImagen(this.crearImagen).then((imagenComprimida) => {
-        // Procede a crear el nuevo producto con la imagen comprimida
-        this.baseDatosService.agregarProducto(
-          {
-            nombreProducto: this.crearNombreProducto,
-            descripcionProducto: this.crearDescripcionProducto,
-            precioPequenoProducto: this.crearPrecioPequenoProducto,
-            precioGrandeProducto: this.crearPrecioGrandeProducto,
-            estadoProducto: this.crearEstadoProducto,
-            categoria: this.crearCategoria
-          },
-          imagenComprimida // Aquí pasas la imagen comprimida como el segundo parámetro
-        ).then(() => {
-          this.modalCrearProducto.dismiss(
-            {
-              nombreProducto: this.crearNombreProducto,
-              descripcionProducto: this.crearDescripcionProducto,
-              precioPequenoProducto: this.crearPrecioPequenoProducto,
-              precioGrandeProducto: this.crearPrecioGrandeProducto,
-              estadoProducto: this.crearEstadoProducto,
-              categoria: this.crearCategoria,
-            },
-            'confirm'
-          );
-          this.presentToast('Producto creado exitosamente');
-          // Limpiar los campos del modal
-          this.crearNombreProducto = '';
-          this.crearDescripcionProducto = '';
-          this.crearPrecioPequenoProducto = '';
-          this.crearPrecioGrandeProducto = '';
-          this.crearEstadoProducto = null;
-          this.crearCategoria = '';
-          this.nuevaImagen = null; // Limpiar la imagen seleccionada
-          this.nuevaImagenPreview = null; // Limpiar la vista previa de la imagen
-        }).catch((error: any) => {
-          this.presentToast('Error al crear el producto: ' + error.message);
+          if (existe) {
+            this.presentToast('Ya existe un producto con este nombre.');
+          } else {
+            // Comprime la imagen antes de enviarla
+            this.comprimirImagen(this.crearImagen).then((imagenComprimida) => {
+              // Procede a crear el nuevo producto con la imagen comprimida
+              this.baseDatosService.agregarProducto(
+                {
+                  nombreProducto: this.crearNombreProducto,
+                  descripcionProducto: this.crearDescripcionProducto,
+                  precioPequenoProducto: this.crearPrecioPequenoProducto,
+                  precioGrandeProducto: this.crearPrecioGrandeProducto,
+                  estadoProducto: this.crearEstadoProducto,
+                  categoria: this.crearCategoria
+                },
+                imagenComprimida // Aquí pasas la imagen comprimida como el segundo parámetro
+              ).then(() => {
+                this.modalCrearProducto.dismiss(
+                  {
+                    nombreProducto: this.crearNombreProducto,
+                    descripcionProducto: this.crearDescripcionProducto,
+                    precioPequenoProducto: this.crearPrecioPequenoProducto,
+                    precioGrandeProducto: this.crearPrecioGrandeProducto,
+                    estadoProducto: this.crearEstadoProducto,
+                    categoria: this.crearCategoria,
+                  },
+                  'confirm'
+                );
+                this.presentToast('Producto creado exitosamente');
+                // Limpiar los campos del modal
+                this.crearNombreProducto = '';
+                this.crearDescripcionProducto = '';
+                this.crearPrecioPequenoProducto = '';
+                this.crearPrecioGrandeProducto = '';
+                this.crearEstadoProducto = null;
+                this.crearCategoria = '';
+                this.nuevaImagen = null; // Limpiar la imagen seleccionada
+                this.nuevaImagenPreview = null; // Limpiar la vista previa de la imagen
+              }).catch((error: any) => {
+                this.presentToast('Error al crear el producto: ' + error.message);
+              });
+            }).catch((error) => {
+              this.presentToast('Error al comprimir la imagen: ' + error.message);
+            });
+          }
         });
-      }).catch((error) => {
-        this.presentToast('Error al comprimir la imagen: ' + error.message);
-      });
-    }
-  });
-  break;
+        break;
 
 
 
@@ -340,22 +340,19 @@ export class MenuListaComponent implements OnInit {
           // Dibuja la imagen redimensionada en el canvas
           ctx?.drawImage(img, 0, 0, width, height);
   
-          // Obtener el tipo MIME original de la imagen
-          const mimeType = imagen.type || 'image/jpeg'; // Si no tiene tipo, se asigna 'image/jpeg' por defecto
-  
-          // Comprimir la imagen con el tipo MIME adecuado
+          // Convierte la imagen redimensionada a un Data URL con la mayor compresión posible
           canvas.toBlob((blob) => {
             if (blob) {
-              // Crea un objeto File a partir del Blob, manteniendo el tipo original
+              // Crea un objeto File a partir del Blob
               const file = new File([blob], imagen.name, {
-                type: mimeType,
+                type: 'image/jpg',
                 lastModified: new Date().getTime(),
               });
               resolve(file); // Devuelve la imagen comprimida
             } else {
               reject('Error al comprimir la imagen');
             }
-          }, mimeType, 0.2); // Comprime con el tipo MIME original
+          }, 'image/jpg', 0.2); // Comprime aún más con una calidad de 0.2
         };
       };
       reader.onerror = (error) => {
@@ -365,7 +362,8 @@ export class MenuListaComponent implements OnInit {
     });
   }
   
-  
+
+
 
   verificarCamposVacios(): boolean {
     // Validación del nombre del producto
@@ -697,11 +695,11 @@ export class MenuListaComponent implements OnInit {
       message: mensaje,
       buttons: ['OK'], // Botón de confirmación
     });
-  
+
     await alert.present();
   }
-  
-  
+
+
 
   // Mostrar un mensaje emergente (toast) con un mensaje específico
   async presentToast(message: string) {
@@ -757,10 +755,10 @@ export class MenuListaComponent implements OnInit {
       message: message,      // Mensaje que se mostrará
       buttons: ['OK']        // Botón que cierra el mensaje
     });
-  
+
     await alert.present(); // Muestra el mensaje
   }
-  
+
 
   // Manejar el cierre de los modales, mostrando el mensaje adecuado
   onWillDismiss(event: Event, modalType: string) {
@@ -823,7 +821,7 @@ export class MenuListaComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       this.crearImagen = input.files[0]; // Almacena la imagen seleccionada
       this.nuevaImagen = input.files[0]; // También actualiza nuevaImagen si lo necesitas en otro lugar
-  
+
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
@@ -835,7 +833,7 @@ export class MenuListaComponent implements OnInit {
           const maxHeight = 600; // Tamaño máximo más pequeño para compresión agresiva
           let width = img.width;
           let height = img.height;
-  
+
           // Redimensionar la imagen manteniendo la relación de aspecto
           if (width > height) {
             if (width > maxWidth) {
@@ -848,16 +846,16 @@ export class MenuListaComponent implements OnInit {
               height = maxHeight;
             }
           }
-  
+
           canvas.width = width;
           canvas.height = height;
-  
+
           // Dibuja la imagen redimensionada en el canvas
           ctx?.drawImage(img, 0, 0, width, height);
-  
+
           // Convierte la imagen redimensionada a un Data URL con la mayor compresión posible
           this.nuevaImagenPreview = canvas.toDataURL('image/jpeg', 0.2); // Usamos 0.4 para una alta compresión
-  
+
           // Convierte el canvas a un archivo Blob
           canvas.toBlob((blob) => {
             if (blob) {
@@ -866,7 +864,7 @@ export class MenuListaComponent implements OnInit {
                 type: 'image/jpeg',
                 lastModified: new Date().getTime(),
               });
-  
+
               this.nuevaImagen = file; // Aquí tienes el archivo comprimido
             }
           }, 'image/jpeg', 0.4); // Comprime aún más con una calidad de 0.4
@@ -879,9 +877,9 @@ export class MenuListaComponent implements OnInit {
       reader.readAsDataURL(this.crearImagen); // Lee la imagen seleccionada
     }
   }
-  
-  
-  
+
+
+
 
 
 
